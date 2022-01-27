@@ -1,0 +1,259 @@
+--//Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+--//Variables
+local LocalPlayer = Players.LocalPlayer
+local Library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
+
+--//Controls
+local WalkSpeed = LocalPlayer.Character.Humanoid.WalkSpeed
+local TweenWalk = false
+local Fly = false
+local NoClip = false
+
+--//Tables
+local Connections = {}
+
+--//Initialization
+local Window = Library:CreateWindow("Katrist's Script Hub")
+
+local Player = Window:CreateFolder("Player")
+local Explorer = Window:CreateFolder("Workspace")
+
+--//Disable Connections
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"))) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("UseJumpPower"))) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.StateChanged)) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.StateEnabledChanged)) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(workspace:GetPropertyChangedSignal("Gravity"))) do
+	Connection:Disable()
+end
+
+--//Local Functions
+local function CreateTween()
+	local Tween = TweenService:Create(LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(1), {CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame + LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * WalkSpeed})
+	Tween:Play()
+end
+
+local function ToggleTweenWalk()
+	if not Fly then
+		if TweenWalk then
+			LocalPlayer.Character.Humanoid.WalkSpeed = 16
+
+			Connections["TweenWalkBegan"] = UserInputService.InputBegan:Connect(function(Input)
+				if UserInputService:GetFocusedTextBox() then return end
+				
+				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+					if Input.KeyCode == Enum.KeyCode.W then
+						Connections["TweenWalkForward"] = RunService.Stepped:Connect(CreateTween)
+					elseif Input.KeyCode == Enum.KeyCode.A then
+						Connections["TweenWalkLeft"] = RunService.Stepped:Connect(CreateTween)
+					elseif Input.KeyCode == Enum.KeyCode.S then
+						Connections["TweenWalkBackward"] = RunService.Stepped:Connect(CreateTween)
+					elseif Input.KeyCode == Enum.KeyCode.D then
+						Connections["TweenWalkRight"] = RunService.Stepped:Connect(CreateTween)
+					end
+				end
+			end)
+
+			Connections["TweenWalkEnded"] = UserInputService.InputEnded:Connect(function(Input)
+				if Input.KeyCode == Enum.KeyCode.W then
+					Connections["TweenWalkForward"]:Disconnect()
+				elseif Input.KeyCode == Enum.KeyCode.A then
+					Connections["TweenWalkLeft"]:Disconnect()
+				elseif Input.KeyCode == Enum.KeyCode.S then
+					Connections["TweenWalkBackward"]:Disconnect()
+				elseif Input.KeyCode == Enum.KeyCode.D then
+					Connections["TweenWalkRight"]:Disconnect()
+				end
+			end) 
+		else
+			LocalPlayer.Character.Humanoid.WalkSpeed = WalkSpeed
+
+			Connections["TweenWalkBegan"]:Disconnect()
+			Connections["TweenWalkForward"]:Disconnect()
+			Connections["TweenWalkLeft"]:Disconnect()
+			Connections["TweenWalkBackward"]:Disconnect()
+			Connections["TweenWalkRight"]:Disconnect()
+			Connections["TweenWalkEnded"]:Disconnect()
+		end
+	end
+end
+
+local function ToggleSpeed(Value)
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+		if Connections["WalkSpeed"] then
+			Connections["WalkSpeed"]:Disconnect()
+		end
+		
+		WalkSpeed = Value
+
+		Connections["WalkSpeed"] = RunService.Stepped:Connect(function()
+			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and not TweenWalk then
+				local Humanoid = LocalPlayer.Character.Humanoid
+				
+				Humanoid.WalkSpeed = Value
+			end
+		end)
+	end
+end
+
+local function ToggleJump(Value)
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+		if Connections["JumpPower"] then
+			Connections["JumpPower"]:Disconnect()
+		end
+
+		Connections["JumpPower"] = RunService.Stepped:Connect(function()
+			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+				local Humanoid = LocalPlayer.Character.Humanoid
+
+				Humanoid.UseJumpPower = true
+				Humanoid.JumpPower = Value
+			end
+		end)
+	end
+end
+
+local function ToggleFly()
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and not TweenWalk then
+		local Humanoid = LocalPlayer.Character.Humanoid
+
+		if Connections["Gravity"] then
+			Connections["Gravity"]:Disconnect()
+		end
+
+		if Fly then
+			Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
+			Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+
+			Humanoid:ChangeState(Enum.HumanoidStateType.Swimming)
+
+			Connections["Gravity"] = RunService.Stepped:Connect(function()
+				workspace.Gravity = 0
+			end)
+		else
+			Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, true)
+			Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+
+			workspace.Gravity = 196.2
+		end
+	end
+end
+
+local function ToggleNoClip()
+	if LocalPlayer.Character then
+		if NoClip then
+			Connections["NoClipping"] = RunService.Stepped:Connect(function()
+				if LocalPlayer.Character then
+					for i, Descendant in ipairs(LocalPlayer.Character:GetDescendants()) do
+						if Descendant:IsA("BasePart") and Descendant.CanCollide == true then
+							Descendant.CanCollide = false
+						end
+					end
+				end
+
+			end)
+		else
+			Connections["NoClipping"]:Disconnect()
+		end
+	end
+end
+
+local function ToggleGravity(Value)
+	if Connections["Gravity"] then
+		Connections["Gravity"]:Disconnect()
+	end
+
+	Connections["Gravity"] = RunService.Stepped:Connect(function()
+		workspace.Gravity = Value
+	end)
+end
+
+--//Functions
+Player:Slider("WalkSpeed",{
+	min = 16; 
+	max = 1000; 
+},function(Value)
+	ToggleSpeed(Value)
+end)
+
+Player:Slider("JumpPower",{
+	min = 50; 
+	max = 1000; 
+},function(Value)
+	ToggleJump(Value)
+end)
+
+Player:Toggle("TweenWalk",function(Bool) 
+	TweenWalk = Bool 
+
+	ToggleTweenWalk()
+end)
+
+Player:Toggle("Fly",function(Bool) 
+	Fly = Bool 
+
+	ToggleFly()
+end)
+
+Player:Button("Reset All", function()
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+		local Humanoid = LocalPlayer.Character.Humanoid
+
+		if Connections["WalkSpeed"] then
+			Connections["WalkSpeed"]:Disconnect()
+		end
+
+		if Connections["JumpPower"] then
+			Connections["JumpPower"]:Disconnect()
+		end
+
+		Humanoid.WalkSpeed = 16
+
+		Humanoid.UseJumpPower = false
+		Humanoid.JumpPower = 50
+	end
+end)
+
+Explorer:Toggle("NoClip",function(Bool) 
+	NoClip = Bool 
+
+	ToggleNoClip()
+end)
+
+Explorer:Slider("Gravity",{
+	min = 0; 
+	max = 1000; 
+},function(Value)
+	if not Fly then
+		ToggleGravity(Value)
+	end
+end)
+
+Explorer:Button("Reset All", function()
+	if not Fly and Connections["Gravity"] then
+		Connections["Gravity"]:Disconnect()
+
+		workspace.Gravity = 196.2
+	end
+end)
