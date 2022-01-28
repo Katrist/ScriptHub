@@ -61,7 +61,7 @@ local function ToggleTweenWalk()
 
 			Connections["TweenWalkBegan"] = UserInputService.InputBegan:Connect(function(Input)
 				if UserInputService:GetFocusedTextBox() then return end
-				
+
 				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
 					if Input.KeyCode == Enum.KeyCode.W then
 						Connections["TweenWalkForward"] = RunService.Stepped:Connect(CreateTween)
@@ -104,13 +104,13 @@ local function ToggleSpeed(Value)
 		if Connections["WalkSpeed"] then
 			Connections["WalkSpeed"]:Disconnect()
 		end
-		
+
 		WalkSpeed = Value
 
 		Connections["WalkSpeed"] = RunService.Stepped:Connect(function()
 			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and not TweenWalk then
 				local Humanoid = LocalPlayer.Character.Humanoid
-				
+
 				Humanoid.WalkSpeed = Value
 			end
 		end)
@@ -216,6 +216,14 @@ Player:Toggle("Fly",function(Bool)
 	ToggleFly()
 end)
 
+local Dropdown = Player:Dropdown("Teleport", Players:GetChildren(), false, function(Option)
+	local Victim = Players:FindFirstChild(Option)
+
+	if Victim then
+		LocalPlayer.Character:PivotTo(Victim.Character.HumanoidRootPart.CFrame)
+	end
+end)
+
 Player:Button("Reset All", function()
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 		local Humanoid = LocalPlayer.Character.Humanoid
@@ -256,4 +264,12 @@ Explorer:Button("Reset All", function()
 
 		workspace.Gravity = 196.2
 	end
+end)
+
+Players.PlayerAdded:Connect(function()
+	Dropdown:Refresh(Players:GetChildren())
+end)
+
+Players.PlayerRemoving:Connect(function()
+	Dropdown:Refresh(Players:GetChildren())
 end)
