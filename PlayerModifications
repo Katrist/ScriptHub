@@ -171,7 +171,6 @@ local function ToggleNoClip()
 						end
 					end
 				end
-
 			end)
 		else
 			Connections["NoClipping"]:Disconnect()
@@ -219,7 +218,7 @@ end)
 local Dropdown = Player:Dropdown("Teleport", Players:GetChildren(), false, function(Option)
 	local Victim = Players:FindFirstChild(Option)
 
-	if Victim then
+	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
 		LocalPlayer.Character:PivotTo(Victim.Character.HumanoidRootPart.CFrame)
 	end
 end)
