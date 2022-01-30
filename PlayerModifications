@@ -10,7 +10,7 @@ local Library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/Aika
 
 --//Controls
 local WalkSpeed = LocalPlayer.Character.Humanoid.WalkSpeed
-local TweenWalk = false
+local TeleportWalk = false
 local Fly = false
 local NoClip = false
 local OriginalCFrame
@@ -92,44 +92,17 @@ local function ToggleJump(Value)
 	end
 end
 
-local function ToggleTweenWalk()
-	if TweenWalk then
+local function ToggleTeleportWalk()
+	if TeleportWalk then
 		LocalPlayer.Character.Humanoid.WalkSpeed = 16
 
-		Connections["TweenWalkBegan"] = UserInputService.InputBegan:Connect(function(Input)
-			if UserInputService:GetFocusedTextBox() then return end
-
-			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-				if Input.KeyCode == Enum.KeyCode.W then
-					Connections["TweenWalkForward"] = RunService.Stepped:Connect(CreateTween)
-				elseif Input.KeyCode == Enum.KeyCode.A then
-					Connections["TweenWalkLeft"] = RunService.Stepped:Connect(CreateTween)
-				elseif Input.KeyCode == Enum.KeyCode.S then
-					Connections["TweenWalkBackward"] = RunService.Stepped:Connect(CreateTween)
-				elseif Input.KeyCode == Enum.KeyCode.D then
-					Connections["TweenWalkRight"] = RunService.Stepped:Connect(CreateTween)
-				end
-			end
-		end)
-
-		Connections["TweenWalkEnded"] = UserInputService.InputEnded:Connect(function(Input)
-			if Input.KeyCode == Enum.KeyCode.W and Connections["TweenWalkForward"] then
-				Connections["TweenWalkForward"]:Disconnect()
-			elseif Input.KeyCode == Enum.KeyCode.A and Connections["TweenWalkLeft"] then
-				Connections["TweenWalkLeft"]:Disconnect()
-			elseif Input.KeyCode == Enum.KeyCode.S and Connections["TweenWalkBackward"] then
-				Connections["TweenWalkBackward"]:Disconnect()
-			elseif Input.KeyCode == Enum.KeyCode.D and Connections["TweenWalkRight"] then
-				Connections["TweenWalkRight"]:Disconnect()
+		Connections["TeleportWalk"] = RunService.Stepped:Connect(function()
+			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character.Humanoid.MoveDirection.Magnitude > 0 then
+				LocalPlayer.Character:TranslateBy(LocalPlayer.Character.Humanoid.MoveDirection * (WalkSpeed/60))
 			end
 		end) 
 	else
-		Connections["TweenWalkBegan"]:Disconnect()
-		Connections["TweenWalkForward"]:Disconnect()
-		Connections["TweenWalkLeft"]:Disconnect()
-		Connections["TweenWalkBackward"]:Disconnect()
-		Connections["TweenWalkRight"]:Disconnect()
-		Connections["TweenWalkEnded"]:Disconnect()
+		Connections["TeleportWalk"]:Disconnect()
 
 		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 			LocalPlayer.Character.Humanoid.WalkSpeed = WalkSpeed
@@ -242,20 +215,16 @@ Player:Button("Reset All", function()
 	end
 end)
 
-Player:Toggle("TweenWalk",function(Bool) 
-	if not Fly then
-		TweenWalk = Bool 
+Player:Toggle("TeleportWalk",function(Bool) 
+	TeleportWalk = Bool 
 
-		ToggleTweenWalk()		
-	end
+	ToggleTeleportWalk()		
 end)
 
 Player:Toggle("Fly",function(Bool) 
-	if not TweenWalk then
-		Fly = Bool 
+	Fly = Bool 
 
-		ToggleFly()		
-	end
+	ToggleFly()		
 end)
 
 local Teleport = Player:Dropdown("Teleport", Players:GetChildren(), false, function(Option)
