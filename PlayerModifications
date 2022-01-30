@@ -241,6 +241,12 @@ local Follow = Player:Dropdown("Follow", Players:GetChildren(), false, function(
 	end
 end)
 
+Player:Button("UnFollow", function()
+	if Connections["Follow"] then
+		Connections["Follow"]:Disconnect()
+	end
+end)
+
 Player:Button("Reset All", function()
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 		local Humanoid = LocalPlayer.Character.Humanoid
