@@ -160,6 +160,16 @@ local function ToggleFly()
 	end
 end
 
+local function ToggleFollow(Victim)
+	if Connections["Follow"] then
+		Connections["Follow"]:Disconnect()
+	end
+	
+	Connections["Follow"] = RunService.Stepped:Connect(function()
+		LocalPlayer.Character:PivotTo(Victim.Character.HumanoidRootPart.CFrame)
+	end)
+end
+
 local function ToggleNoClip()
 	if LocalPlayer.Character then
 		if NoClip then
@@ -215,11 +225,19 @@ Player:Toggle("Fly",function(Bool)
 	ToggleFly()
 end)
 
-local Dropdown = Player:Dropdown("Teleport", Players:GetChildren(), false, function(Option)
+local Teleport = Player:Dropdown("Teleport", Players:GetChildren(), false, function(Option)
 	local Victim = Players:FindFirstChild(Option)
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
 		LocalPlayer.Character:PivotTo(Victim.Character.HumanoidRootPart.CFrame)
+	end
+end)
+
+local Follow = Player:Dropdown("Follow", Players:GetChildren(), false, function(Option)
+	local Victim = Players:FindFirstChild(Option)
+
+	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
+		ToggleFollow(Victim)
 	end
 end)
 
@@ -266,9 +284,9 @@ Explorer:Button("Reset All", function()
 end)
 
 Players.PlayerAdded:Connect(function()
-	Dropdown:Refresh(Players:GetChildren())
+	Teleport:Refresh(Players:GetChildren())
 end)
 
 Players.PlayerRemoving:Connect(function()
-	Dropdown:Refresh(Players:GetChildren())
+	Teleport:Refresh(Players:GetChildren())
 end)
