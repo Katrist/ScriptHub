@@ -37,6 +37,14 @@ for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetProp
 	Connection:Disable()
 end
 
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("MoveDirection"))) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.MoveDirection:GetPropertyChangedSignal("Magnitude"))) do
+	Connection:Disable()
+end
+
 for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.StateChanged)) do
 	Connection:Disable()
 end
@@ -66,7 +74,7 @@ local function ToggleSpeed(Value)
 		WalkSpeed = Value
 
 		Connections["WalkSpeed"] = RunService.Stepped:Connect(function()
-			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and not TweenWalk then
+			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and not TeleportWalk then
 				local Humanoid = LocalPlayer.Character.Humanoid
 
 				Humanoid.WalkSpeed = Value
