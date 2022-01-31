@@ -24,6 +24,8 @@ local Window = Library:CreateWindow("Katrist's Script Hub")
 
 local Player = Window:CreateFolder("Player")
 local Explorer = Window:CreateFolder("Workspace")
+local Credits = Window:CreateFolder("Credits")
+local KillSwitches = Window:CreateFolder("KillSwitches")
 
 for i, Player in ipairs(Players:GetPlayers()) do
 	if Player ~= LocalPlayer then
@@ -310,6 +312,36 @@ Explorer:Button("Reset All", function()
 		workspace.Gravity = 196.2
 	end
 end)
+
+Credits:Label("Scripting by Katrist#3130",{
+	TextSize = 16,
+	TextColor = Color3.fromRGB(255, 255, 255),
+	BgColor = Color3.fromRGB(38, 38, 38),
+})
+
+Credits:Label("Gui by Wally's Gui Library",{
+	TextSize = 16,
+	TextColor = Color3.fromRGB(255, 255, 255),
+	BgColor = Color3.fromRGB(38, 38, 38),
+})
+
+Credits:Label("canadigansLR5 for being a noob",{
+	TextSize = 16,
+	TextColor = Color3.fromRGB(255, 255, 255),
+	BgColor = Color3.fromRGB(38, 38, 38),
+})
+
+KillSwitches:Button("Reset Everything", function()
+	for i, Connection in ipairs(Connections) do
+		Connection:Disconnect()
+	end
+	
+	LocalPlayer.Character.Humanoid.WalkSpeed = 16
+	LocalPlayer.Character.Humanoid.JumpHeight = 7.2
+	workspace.Gravity = 196.2
+end)
+
+KillSwitches:DestroyGui()
 
 --//Refreshing Dropdowns
 local function RefreshDropdowns()
