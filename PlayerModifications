@@ -17,12 +17,19 @@ local OriginalPivot
 
 --//Tables
 local Connections = {}
+local PlayerTable = {}
 
 --//Initialization
 local Window = Library:CreateWindow("Katrist's Script Hub")
 
 local Player = Window:CreateFolder("Player")
 local Explorer = Window:CreateFolder("Workspace")
+
+for i, Player in ipairs(Players:GetPlayers()) do
+	if Player ~= LocalPlayer then
+		table.insert(PlayerTable, Player.Name)
+	end
+end
 
 --//Disable Connections
 for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
@@ -239,7 +246,7 @@ Player:Toggle("Fly",function(Bool)
 	ToggleFly()		
 end)
 
-local Teleport = Player:Dropdown("Teleport", Players:GetChildren(), false, function(Option)
+local Teleport = Player:Dropdown("Teleport", PlayerTable, false, function(Option)
 	local Victim = Players:FindFirstChild(Option)
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
@@ -248,7 +255,7 @@ local Teleport = Player:Dropdown("Teleport", Players:GetChildren(), false, funct
 	end
 end)
 
-local Follow = Player:Dropdown("Follow", Players:GetChildren(), false, function(Option)
+local Follow = Player:Dropdown("Follow", PlayerTable, false, function(Option)
 	local Victim = Players:FindFirstChild(Option)
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
@@ -267,7 +274,7 @@ Player:Button("UnFollow", function()
 	end
 end)
 
-local Spectate = Player:Dropdown("Spectate", Players:GetChildren(), false, function(Option)
+local Spectate = Player:Dropdown("Spectate", PlayerTable, false, function(Option)
 	local Victim = Players:FindFirstChild(Option)
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("Humanoid") then
@@ -304,14 +311,25 @@ Explorer:Button("Reset All", function()
 	end
 end)
 
+--//Refreshing Dropdowns
+local function RefreshDropdowns()
+	table.clear(PlayerTable)
+
+	for i, Player in ipairs(Players:GetChildren()) do
+		if Player ~= LocalPlayer then
+			table.insert(PlayerTable, Player.Name)
+		end
+	end
+
+	Teleport:Refresh(PlayerTable)
+	Follow:Refresh(PlayerTable)
+	Spectate:Refresh(PlayerTable)
+end
+
 Players.PlayerAdded:Connect(function()
-	Teleport:Refresh(Players:GetPlayers())
-	Follow:Refresh(Players:GetPlayers())
-	Spectate:Refresh(Players:GetPlayers())
+	RefreshDropdowns()
 end)
 
 Players.PlayerRemoving:Connect(function()
-	Teleport:Refresh(Players:GetPlayers())
-	Follow:Refresh(Players:GetPlayers())
-	Spectate:Refresh(Players:GetPlayers())
+	RefreshDropdowns()
 end)
