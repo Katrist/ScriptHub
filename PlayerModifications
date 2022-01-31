@@ -29,7 +29,7 @@ for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetProp
 	Connection:Disable()
 end
 
-for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"))) do
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpHeight"))) do
 	Connection:Disable()
 end
 
@@ -81,17 +81,25 @@ end
 
 local function ToggleJump(Value)
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-		if Connections["JumpPower"] then
-			Connections["JumpPower"]:Disconnect()
+		if Connections["JumpHeight"] then
+			Connections["JumpHeight"]:Disconnect()
 		end
+		
+		if Connections["EnableJump"] then
+			Connections["EnableJump"]:Disconnect()
+		end
+		
+		local Humanoid = LocalPlayer.Character.Humanoid
 
-		Connections["JumpPower"] = RunService.Stepped:Connect(function()
+		Connections["JumpHeight"] = RunService.Stepped:Connect(function()
 			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-				local Humanoid = LocalPlayer.Character.Humanoid
-
-				Humanoid.UseJumpPower = true
-				Humanoid.JumpPower = Value
+				Humanoid.UseJumpPower = false
+				Humanoid.JumpHeight = Value
 			end
+		end)
+		
+		Connections["EnableJump"] = UserInputService.JumpRequest:Connect(function()
+			Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
 		end)
 	end
 end
@@ -195,8 +203,8 @@ Player:Slider("WalkSpeed",{
 	ToggleSpeed(Value)
 end)
 
-Player:Slider("JumpPower",{
-	min = 50; 
+Player:Slider("JumpHeight",{
+	min = 7.2; 
 	max = 1000; 
 },function(Value)
 	ToggleJump(Value)
@@ -210,12 +218,16 @@ Player:Button("Reset All", function()
 			Connections["WalkSpeed"]:Disconnect()
 		end
 
-		if Connections["JumpPower"] then
-			Connections["JumpPower"]:Disconnect()
+		if Connections["JumpHeight"] then
+			Connections["JumpHeight"]:Disconnect()
+		end
+		
+		if Connections["EnableJump"] then
+			Connections["EnableJump"]:Disconnect()
 		end
 
 		Humanoid.WalkSpeed = 16
-		Humanoid.JumpPower = 50
+		Humanoid.JumpHeight = 7.2
 	end
 end)
 
