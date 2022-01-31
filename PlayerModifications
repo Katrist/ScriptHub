@@ -88,17 +88,19 @@ local function ToggleJump(Value)
 		if Connections["EnableJump"] then
 			Connections["EnableJump"]:Disconnect()
 		end
-		
-		local Humanoid = LocalPlayer.Character.Humanoid
 
 		Connections["JumpHeight"] = RunService.Stepped:Connect(function()
 			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+				local Humanoid = LocalPlayer.Character.Humanoid
+				
 				Humanoid.UseJumpPower = false
 				Humanoid.JumpHeight = Value
 			end
 		end)
 		
 		Connections["EnableJump"] = UserInputService.JumpRequest:Connect(function()
+			local Humanoid = LocalPlayer.Character.Humanoid
+			
 			Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
 		end)
 	end
