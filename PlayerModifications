@@ -29,7 +29,7 @@ local KillSwitches = Window:CreateFolder("KillSwitches")
 
 for i, Player in ipairs(Players:GetPlayers()) do
 	if Player ~= LocalPlayer then
-		table.insert(PlayerTable, Player.Name)
+		table.insert(PlayerTable, Player.Name .. " (" .. Player.DisplayName .. ")")
 	end
 end
 
@@ -167,8 +167,10 @@ local function ToggleFollow(Victim)
 	OriginalPivot = LocalPlayer.Character:GetPivot()
 	
 	Connections["Follow"] = RunService.Stepped:Connect(function()
-		LocalPlayer.Character.Humanoid.Sit = false
-		LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+			LocalPlayer.Character.Humanoid.Sit = false
+			LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())			
+		end
 	end)
 end
 
@@ -249,7 +251,7 @@ Player:Toggle("Fly",function(Bool)
 end)
 
 local Teleport = Player:Dropdown("Teleport", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option)
+	local Victim = Players:FindFirstChild(Option:split(" (")[1])
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
 		LocalPlayer.Character.Humanoid.Sit = false
@@ -258,7 +260,7 @@ local Teleport = Player:Dropdown("Teleport", PlayerTable, false, function(Option
 end)
 
 local Follow = Player:Dropdown("Follow", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option)
+	local Victim = Players:FindFirstChild(Option:split(" (")[1])
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
 		ToggleFollow(Victim)
@@ -277,7 +279,7 @@ Player:Button("UnFollow", function()
 end)
 
 local Spectate = Player:Dropdown("Spectate", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option)
+	local Victim = Players:FindFirstChild(Option:split(" (")[1])
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("Humanoid") then
 		workspace.CurrentCamera.CameraSubject = Victim.Character.Humanoid
@@ -349,7 +351,7 @@ local function RefreshDropdowns()
 
 	for i, Player in ipairs(Players:GetChildren()) do
 		if Player ~= LocalPlayer then
-			table.insert(PlayerTable, Player.Name)
+			table.insert(PlayerTable, Player.Name .. " (" .. Player.DisplayName .. ")")
 		end
 	end
 
