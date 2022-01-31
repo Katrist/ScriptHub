@@ -315,19 +315,19 @@ end)
 
 Credits:Label("Scripting by Katrist#3130",{
 	TextSize = 16,
-	TextColor = Color3.fromRGB(255, 255, 255),
+	TextColor = Color3.fromRGB(171, 171, 171),
 	BgColor = Color3.fromRGB(38, 38, 38),
 })
 
 Credits:Label("Gui by Wally's Gui Library",{
 	TextSize = 16,
-	TextColor = Color3.fromRGB(255, 255, 255),
+	TextColor = Color3.fromRGB(171, 171, 171),
 	BgColor = Color3.fromRGB(38, 38, 38),
 })
 
 Credits:Label("canadigansLR5 for being a noob",{
 	TextSize = 16,
-	TextColor = Color3.fromRGB(255, 255, 255),
+	TextColor = Color3.fromRGB(171, 171, 171),
 	BgColor = Color3.fromRGB(38, 38, 38),
 })
 
