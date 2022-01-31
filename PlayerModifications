@@ -13,7 +13,7 @@ local WalkSpeed = LocalPlayer.Character.Humanoid.WalkSpeed
 local TeleportWalk = false
 local Fly = false
 local NoClip = false
-local OriginalCFrame
+local OriginalPivot
 
 --//Tables
 local Connections = {}
@@ -54,13 +54,6 @@ for i, Connection in pairs(getconnections(workspace:GetPropertyChangedSignal("Gr
 end
 
 --//Local Functions
-local function CreateTween()
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-		local Tween = TweenService:Create(LocalPlayer.Character.HumanoidRootPart, TweenInfo.new(1), {CFrame = LocalPlayer.Character.HumanoidRootPart.CFrame + LocalPlayer.Character.HumanoidRootPart.CFrame.LookVector * WalkSpeed})
-		Tween:Play()		
-	end
-end
-
 local function ToggleSpeed(Value)
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 		if Connections["WalkSpeed"] then
@@ -162,10 +155,11 @@ local function ToggleFollow(Victim)
 		Connections["Follow"]:Disconnect()
 	end
 	
-	OriginalCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+	OriginalPivot = LocalPlayer.Character:GetPivot()
 	
 	Connections["Follow"] = RunService.Stepped:Connect(function()
-		LocalPlayer.Character:PivotTo(Victim.Character.HumanoidRootPart.CFrame)
+		LocalPlayer.Character.Humanoid.Sit = false
+		LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())
 	end)
 end
 
@@ -249,7 +243,8 @@ local Teleport = Player:Dropdown("Teleport", Players:GetChildren(), false, funct
 	local Victim = Players:FindFirstChild(Option)
 
 	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
-		LocalPlayer.Character:PivotTo(Victim.Character.HumanoidRootPart.CFrame)
+		LocalPlayer.Character.Humanoid.Sit = false
+		LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())
 	end
 end)
 
@@ -267,7 +262,8 @@ Player:Button("UnFollow", function()
 	end
 	
 	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-		LocalPlayer.Character:PivotTo(OriginalCFrame)
+		LocalPlayer.Character.Humanoid.Sit = false
+		LocalPlayer.Character:PivotTo(OriginalPivot)
 	end
 end)
 
