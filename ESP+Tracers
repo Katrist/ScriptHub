@@ -1,0 +1,143 @@
+--//Services
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+
+--//Variables
+local LocalPlayer = Players.LocalPlayer
+
+--//Tables
+local Connections = {}
+local Tracers = {}
+local ESPs = {}
+
+--//Functions
+local function CreateBillboardGui(Size, Character)
+	local BillboardGui = Instance.new("BillboardGui")
+	BillboardGui.Name = HttpService:GenerateGUID(false)
+	BillboardGui.AlwaysOnTop = true
+	BillboardGui.Size = Size
+	BillboardGui.Parent = Character
+	
+	return BillboardGui
+end
+
+local function CreateFrame(Size, Position, BillboardGui)
+	local Frame = Instance.new("Frame")
+	Frame.Name = HttpService:GenerateGUID(false)
+	Frame.BorderSizePixel = 0
+	Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Frame.Size = Size
+	Frame.Position = Position
+	Frame.Parent = BillboardGui
+end
+
+local function CreateESP(Character)
+	local BillboardGui = CreateBillboardGui(UDim2.new(5, 0, 7, 0), Character)
+	CreateFrame(UDim2.new(0.05, 0, 1, 0), UDim2.new(0, 0, 0, 0), BillboardGui)
+	CreateFrame(UDim2.new(0.05, 0, 1, 0), UDim2.new(0.95, 0, 0, 0), BillboardGui)
+	CreateFrame(UDim2.new(1, 0, 0.05, 0), UDim2.new(0, 0, 0, 0), BillboardGui)
+	CreateFrame(UDim2.new(1, 0, 0.05, 0), UDim2.new(0, 0, 0.95, 0), BillboardGui)
+	
+	table.insert(ESPs, BillboardGui)
+end
+
+local function CreateAttachments(Character)
+	local Attachment0 = Instance.new("Attachment")
+	Attachment0.Name = "Attachment0"
+	Attachment0.CFrame = CFrame.new(Character.PrimaryPart.CFrame.LookVector * 0.5 - Vector3.new(0, 1, 0))
+	Attachment0.Parent = Character.PrimaryPart
+	
+	local Attachment1 = Instance.new("Attachment")
+	Attachment1.Name = "Attachment1"
+	Attachment1.CFrame = CFrame.new(LocalPlayer.Character.PrimaryPart.CFrame.LookVector * 0.5 - Vector3.new(0, 1, 0))
+	Attachment1.Parent = LocalPlayer.Character.PrimaryPart
+	
+	return Attachment0, Attachment1
+end
+
+local function CreateBeam(Attachment0, Attachment1)
+	local Beam = Instance.new("Beam")
+	Beam.Name = HttpService:GenerateGUID(false)
+	Beam.FaceCamera = true
+	Beam.LightEmission = 0
+	Beam.LightInfluence = 0
+	Beam.Width0 = 0.2
+	Beam.Width1 = 0.2
+	Beam.Attachment0 = Attachment0
+	Beam.Attachment1 = Attachment1
+	
+	return Beam
+end
+
+local function CreateTracer(Character)
+	local Beam = CreateBeam(CreateAttachments(Character))
+	Beam.Parent = Character.PrimaryPart
+	
+	table.insert(Tracers, Beam)
+end
+
+local function StartESPAndTracers()
+	for i, Player in ipairs(Players:GetPlayers()) do
+		if Player ~= LocalPlayer then
+			if Player.Character and Player.Team ~= LocalPlayer.Team then
+				CreateESP(Player.Character)
+				CreateTracer(Player.Character)
+			end
+			
+			Connections["ESPAndTracers"] = Player.CharacterAdded:Connect(function(Character)
+				if Player.Team ~= LocalPlayer.Team then
+					Character:WaitForChild("HumanoidRootPart")
+					
+					CreateESP(Character)
+					CreateTracer(Character)					
+				end
+			end)
+		end
+	end	
+end
+
+Players.PlayerAdded:Connect(function(Player)
+	Player.CharacterAdded:Connect(function(Character)
+		if Player.Team ~= LocalPlayer.Team then
+			Character:WaitForChild("HumanoidRootPart")
+			
+			CreateESP(Character)
+			CreateTracer(Character)			
+		end
+	end)
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(Character)
+	if Connections["ESPAndTracers"] then
+		Connections["ESPAndTracers"]:Disconnect()
+	end
+	
+	Character:WaitForChild("HumanoidRootPart")
+	Character:WaitForChild("Humanoid")
+	
+	StartESPAndTracers()
+	
+	Character.Humanoid.Died:Connect(function()
+		for i, ESP in ipairs(ESPs) do
+			ESP:Destroy()
+		end
+
+		for i, Tracer in ipairs(Tracers) do
+			Tracer:Destroy()
+		end
+	end)
+end)
+
+LocalPlayer.CharacterRemoving:Connect(function()
+	for i, ESP in ipairs(ESPs) do
+		ESP:Destroy()
+	end
+
+	for i, Tracer in ipairs(Tracers) do
+		Tracer:Destroy()
+	end
+end)
+
+if LocalPlayer.Character then
+	StartESPAndTracers()
+end
