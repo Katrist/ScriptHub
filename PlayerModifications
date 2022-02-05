@@ -7,11 +7,13 @@ local TweenService = game:GetService("TweenService")
 --//Variables
 local LocalPlayer = Players.LocalPlayer
 local Library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
+local CurrentCamera = workspace.CurrentCamera
 
 --//Controls
 local WalkSpeed = LocalPlayer.Character.Humanoid.WalkSpeed
 local TeleportWalk = false
 local Fly = false
+local Tracers = false
 local NoClip = false
 local OriginalPivot
 
@@ -24,6 +26,7 @@ local Window = Library:CreateWindow("Katrist's Script Hub")
 
 local Player = Window:CreateFolder("Player")
 local Explorer = Window:CreateFolder("Workspace")
+local Visuals = Window:CreateFolder("Visuals")
 local Credits = Window:CreateFolder("Credits")
 local KillSwitches = Window:CreateFolder("KillSwitches")
 
@@ -192,6 +195,116 @@ local function ToggleNoClip()
 	end
 end
 
+local function ToggleTracers()
+	if Tracers then
+		for i, Player in ipairs(Players:GetPlayers()) do
+			if Player ~= Players.LocalPlayer then
+				local TracerLine = Drawing.new("Line")
+				TracerLine.Color = Color3.fromRGB(255, 255, 255)
+
+				if Player.Character then
+					Connections[Player.Name .. "'s Tracers"] = RunService.RenderStepped:Connect(function()
+						if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+							local Vector0, InViewport = CurrentCamera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position)
+
+							if InViewport then
+								TracerLine.Visible = true
+								TracerLine.From = Vector2.new(CurrentCamera.ViewportSize.X / 2, CurrentCamera.ViewportSize.Y)
+								TracerLine.To = Vector2.new(Vector0.X, Vector0.Y)
+							else
+								TracerLine.Visible = false
+							end
+						end
+					end)
+				end
+
+				Connections["CharacterAdded"] = Player.CharacterAdded:Connect(function(Character)				
+					TracerLine = Drawing.new("Line")
+					TracerLine.Color = Color3.fromRGB(255, 255, 255)
+
+					Connections[Player.Name .. "'s Tracers"] = RunService.RenderStepped:Connect(function()
+						if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+							local Vector0, InViewport = CurrentCamera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position)
+
+							if InViewport then
+								TracerLine.Visible = true
+								TracerLine.From = Vector2.new(CurrentCamera.ViewportSize.X / 2, CurrentCamera.ViewportSize.Y)
+								TracerLine.To = Vector2.new(Vector0.X, Vector0.Y)
+							else
+								TracerLine.Visible = false
+							end
+						end
+					end)
+
+					Connections["Died"] = Character:WaitForChild("Humanoid").Died:Connect(function()
+						if Connections[Player.Name .. "'s Tracers"] then
+							Connections[Player.Name .. "'s Tracers"]:Disconnect()
+						end
+
+						TracerLine:Destroy()
+					end)
+				end)
+
+				Connections["CharacterRemoving"] = Player.CharacterRemoving:Connect(function()
+					if Connections[Player.Name .. "'s Tracers"] then
+						Connections[Player.Name .. "'s Tracers"]:Disconnect()
+					end
+
+					TracerLine:Destroy()
+				end)
+			end
+		end
+
+		Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(Player)
+			local TracerLine = Drawing.new("Line")
+			TracerLine.Color = Color3.fromRGB(255, 255, 255)
+
+			Connections["CharacterAdded"] = Player.CharacterAdded:Connect(function(Character)				
+				TracerLine = Drawing.new("Line")
+				TracerLine.Color = Color3.fromRGB(255, 255, 255)
+
+				Connections[Player.Name .. "'s Tracers"] = RunService.RenderStepped:Connect(function()
+					if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+						local Vector0, InViewport = CurrentCamera:WorldToViewportPoint(Player.Character.HumanoidRootPart.Position)
+
+						if InViewport then
+							TracerLine.Visible = true
+							TracerLine.From = Vector2.new(CurrentCamera.ViewportSize.X / 2, CurrentCamera.ViewportSize.Y)
+							TracerLine.To = Vector2.new(Vector0.X, Vector0.Y)
+						else
+							TracerLine.Visible = false
+						end
+					end
+				end)
+
+				Connections["Died"] = Character:WaitForChild("Humanoid").Died:Connect(function()
+					if Connections[Player.Name .. "'s Tracers"] then
+						Connections[Player.Name .. "'s Tracers"]:Disconnect()
+					end
+
+					TracerLine:Destroy()
+				end)
+			end)
+
+			Connections["CharacterRemoving"] = Player.CharacterRemoving:Connect(function()
+				if Connections[Player.Name .. "'s Tracers"] then
+					Connections[Player.Name .. "'s Tracers"]:Disconnect()
+				end
+
+				TracerLine:Destroy()
+			end)
+		end)
+	else
+		for Name, Connection in pairs(Connections) do
+			if Name == "PlayerAdded" or Name == "CharacterAdded" or Name == "CharacterRemoving" or Name:match("Tracers") or Name == "Died"  then
+				Connection:Disconnect()
+			end
+		end
+
+		Drawing.clear()
+	end
+end
+
 local function ToggleGravity(Value)
 	if Connections["Gravity"] then
 		Connections["Gravity"]:Disconnect()
@@ -278,20 +391,6 @@ Player:Button("UnFollow", function()
 	end
 end)
 
-local Spectate = Player:Dropdown("Spectate", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option:split(" (")[1])
-
-	if Victim and Victim.Character and Victim.Character:FindFirstChild("Humanoid") then
-		workspace.CurrentCamera.CameraSubject = Victim.Character.Humanoid
-	end
-end)
-
-Player:Button("UnSpectate", function()
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
-	end
-end)
-
 Explorer:Toggle("NoClip",function(Bool) 
 	NoClip = Bool 
 
@@ -312,6 +411,26 @@ Explorer:Button("Reset All", function()
 		Connections["Gravity"]:Disconnect()
 
 		workspace.Gravity = 196.2
+	end
+end)
+
+Visuals:Toggle("Tracers",function(Bool) 
+	Tracers = Bool 
+
+	ToggleTracers()
+end)
+
+local Spectate = Visuals:Dropdown("Spectate", PlayerTable, false, function(Option)
+	local Victim = Players:FindFirstChild(Option:split(" (")[1])
+
+	if Victim and Victim.Character and Victim.Character:FindFirstChild("Humanoid") then
+		workspace.CurrentCamera.CameraSubject = Victim.Character.Humanoid
+	end
+end)
+
+Visuals:Button("UnSpectate", function()
+	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+		workspace.CurrentCamera.CameraSubject = LocalPlayer.Character
 	end
 end)
 
