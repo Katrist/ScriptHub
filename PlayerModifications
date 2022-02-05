@@ -218,7 +218,7 @@ local function ToggleTracers()
 					end)
 				end
 
-				Connections["CharacterAdded"] = Player.CharacterAdded:Connect(function(Character)				
+				Connections["TracersCharacterAdded"] = Player.CharacterAdded:Connect(function(Character)				
 					TracerLine = Drawing.new("Line")
 					TracerLine.Color = Color3.fromRGB(255, 255, 255)
 
@@ -236,7 +236,7 @@ local function ToggleTracers()
 						end
 					end)
 
-					Connections["Died"] = Character:WaitForChild("Humanoid").Died:Connect(function()
+					Connections["TracersDied"] = Character:WaitForChild("Humanoid").Died:Connect(function()
 						if Connections[Player.Name .. "'s Tracers"] then
 							Connections[Player.Name .. "'s Tracers"]:Disconnect()
 						end
@@ -245,7 +245,7 @@ local function ToggleTracers()
 					end)
 				end)
 
-				Connections["CharacterRemoving"] = Player.CharacterRemoving:Connect(function()
+				Connections["TracersCharacterRemoving"] = Player.CharacterRemoving:Connect(function()
 					if Connections[Player.Name .. "'s Tracers"] then
 						Connections[Player.Name .. "'s Tracers"]:Disconnect()
 					end
@@ -255,11 +255,11 @@ local function ToggleTracers()
 			end
 		end
 
-		Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(Player)
+		Connections["TracersPlayerAdded"] = Players.PlayerAdded:Connect(function(Player)
 			local TracerLine = Drawing.new("Line")
 			TracerLine.Color = Color3.fromRGB(255, 255, 255)
 
-			Connections["CharacterAdded"] = Player.CharacterAdded:Connect(function(Character)				
+			Connections["TracersCharacterAdded"] = Player.CharacterAdded:Connect(function(Character)				
 				TracerLine = Drawing.new("Line")
 				TracerLine.Color = Color3.fromRGB(255, 255, 255)
 
@@ -277,7 +277,7 @@ local function ToggleTracers()
 					end
 				end)
 
-				Connections["Died"] = Character:WaitForChild("Humanoid").Died:Connect(function()
+				Connections["TracersDied"] = Character:WaitForChild("Humanoid").Died:Connect(function()
 					if Connections[Player.Name .. "'s Tracers"] then
 						Connections[Player.Name .. "'s Tracers"]:Disconnect()
 					end
@@ -286,7 +286,7 @@ local function ToggleTracers()
 				end)
 			end)
 
-			Connections["CharacterRemoving"] = Player.CharacterRemoving:Connect(function()
+			Connections["TracersCharacterRemoving"] = Player.CharacterRemoving:Connect(function()
 				if Connections[Player.Name .. "'s Tracers"] then
 					Connections[Player.Name .. "'s Tracers"]:Disconnect()
 				end
@@ -296,7 +296,7 @@ local function ToggleTracers()
 		end)
 	else
 		for Name, Connection in pairs(Connections) do
-			if Name == "PlayerAdded" or Name == "CharacterAdded" or Name == "CharacterRemoving" or Name:match("Tracers") or Name == "Died"  then
+			if Name:match("Tracers") then
 				Connection:Disconnect()
 			end
 		end
