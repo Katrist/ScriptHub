@@ -41,10 +41,6 @@ for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetProp
 	Connection:Disable()
 end
 
-for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.Running)) do
-	Connection:Disable()
-end
-
 for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.Swimming)) do
 	Connection:Disable()
 end
