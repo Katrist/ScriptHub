@@ -6,7 +6,7 @@ local TweenService = game:GetService("TweenService")
 
 --//Variables
 local LocalPlayer = Players.LocalPlayer
-local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua'))()
+local Library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/AikaV3rm/UiLib/master/Lib.lua')))()
 local CurrentCamera = workspace.CurrentCamera
 
 --//Controls
@@ -38,6 +38,18 @@ end
 
 --//Disable Connections
 for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.Running)) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.Swimming)) do
+	Connection:Disable()
+end
+
+for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid.Climbing)) do
 	Connection:Disable()
 end
 
