@@ -30,12 +30,6 @@ local Visuals = Window:CreateFolder("Visuals")
 local Credits = Window:CreateFolder("Credits")
 local KillSwitches = Window:CreateFolder("KillSwitches")
 
-for i, Player in ipairs(Players:GetPlayers()) do
-	if Player ~= LocalPlayer then
-		table.insert(PlayerTable, Player.Name .. " (" .. Player.DisplayName .. ")")
-	end
-end
-
 --//Disable Connections
 for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
 	Connection:Disable()
@@ -97,7 +91,7 @@ local function ToggleJump(Value)
 		if Connections["JumpHeight"] then
 			Connections["JumpHeight"]:Disconnect()
 		end
-		
+
 		if Connections["EnableJump"] then
 			Connections["EnableJump"]:Disconnect()
 		end
@@ -105,15 +99,15 @@ local function ToggleJump(Value)
 		Connections["JumpHeight"] = RunService.Stepped:Connect(function()
 			if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 				local Humanoid = LocalPlayer.Character.Humanoid
-				
+
 				Humanoid.UseJumpPower = false
 				Humanoid.JumpHeight = Value
 			end
 		end)
-		
+
 		Connections["EnableJump"] = UserInputService.JumpRequest:Connect(function()
 			local Humanoid = LocalPlayer.Character.Humanoid
-			
+
 			Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
 		end)
 	end
@@ -174,9 +168,9 @@ local function ToggleFollow(Victim)
 	if Connections["Follow"] then
 		Connections["Follow"]:Disconnect()
 	end
-	
+
 	OriginalPivot = LocalPlayer.Character:GetPivot()
-	
+
 	Connections["Follow"] = RunService.Stepped:Connect(function()
 		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 			LocalPlayer.Character.Humanoid.Sit = false
@@ -323,6 +317,30 @@ local function ToggleGravity(Value)
 	end)
 end
 
+local function FindPlayerFromFullString(FullName)
+	local playerName
+
+	if FullName:match(" ") then
+		playerName = FullName:split("@")[2]:split(")")[1]
+	else
+		playerName = FullName:split("@")[2]
+	end
+	
+	return playerName
+end
+
+local function UpdatePlayerTable()
+	for i, Player in ipairs(Players:GetPlayers()) do
+		if Player.Name ~= Player.DisplayName then
+			table.insert(PlayerTable, Player.DisplayName .." (@".. Player.Name ..")")
+		else
+			table.insert(PlayerTable, "@" .. Player.Name)
+		end
+	end
+end
+
+UpdatePlayerTable()
+
 --//Functions
 Player:Slider("WalkSpeed",{
 	min = 16; 
@@ -349,7 +367,7 @@ Player:Button("Reset All", function()
 		if Connections["JumpHeight"] then
 			Connections["JumpHeight"]:Disconnect()
 		end
-		
+
 		if Connections["EnableJump"] then
 			Connections["EnableJump"]:Disconnect()
 		end
@@ -372,19 +390,27 @@ Player:Toggle("Fly",function(Bool)
 end)
 
 local Teleport = Player:Dropdown("Teleport", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option:split(" (")[1])
+	local VictimName = FindPlayerFromFullString(Option)
 
-	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
-		LocalPlayer.Character.Humanoid.Sit = false
-		LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())
+	if VictimName then
+		local Victim = Players:FindFirstChild(VictimName)
+
+		if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
+			LocalPlayer.Character.Humanoid.Sit = false
+			LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())
+		end
 	end
 end)
 
 local Follow = Player:Dropdown("Follow", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option:split(" (")[1])
+	local VictimName = FindPlayerFromFullString(Option)
 
-	if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
-		ToggleFollow(Victim)
+	if VictimName then
+		local Victim = Players:FindFirstChild(VictimName)
+
+		if Victim and Victim.Character and Victim.Character:FindFirstChild("HumanoidRootPart") then
+			ToggleFollow(Victim)
+		end
 	end
 end)
 
@@ -429,10 +455,14 @@ Visuals:Toggle("Tracers",function(Bool)
 end)
 
 local Spectate = Visuals:Dropdown("Spectate", PlayerTable, false, function(Option)
-	local Victim = Players:FindFirstChild(Option:split(" (")[1])
+	local VictimName = FindPlayerFromFullString(Option)
+	
+	if VictimName then
+		local Victim = Players:FindFirstChild(VictimName)
 
-	if Victim and Victim.Character and Victim.Character:FindFirstChild("Humanoid") then
-		workspace.CurrentCamera.CameraSubject = Victim.Character.Humanoid
+		if Victim and Victim.Character and Victim.Character:FindFirstChild("Humanoid") then
+			workspace.CurrentCamera.CameraSubject = Victim.Character.Humanoid
+		end
 	end
 end)
 
@@ -461,13 +491,18 @@ Credits:Label("canadigansLR5 for being a noob",{
 })
 
 KillSwitches:Button("Reset Everything", function()
-	for i, Connection in ipairs(Connections) do
+	for i, Connection in pairs(Connections) do
 		Connection:Disconnect()
 	end
 	
+	LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, true)
+	LocalPlayer.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
 	LocalPlayer.Character.Humanoid.WalkSpeed = 16
 	LocalPlayer.Character.Humanoid.JumpHeight = 7.2
+	
 	workspace.Gravity = 196.2
+	
+	Drawing.clear()
 end)
 
 KillSwitches:DestroyGui()
@@ -475,13 +510,9 @@ KillSwitches:DestroyGui()
 --//Refreshing Dropdowns
 local function RefreshDropdowns()
 	table.clear(PlayerTable)
-
-	for i, Player in ipairs(Players:GetChildren()) do
-		if Player ~= LocalPlayer then
-			table.insert(PlayerTable, Player.Name .. " (" .. Player.DisplayName .. ")")
-		end
-	end
-
+	
+	UpdatePlayerTable()
+	
 	Teleport:Refresh(PlayerTable)
 	Follow:Refresh(PlayerTable)
 	Spectate:Refresh(PlayerTable)
