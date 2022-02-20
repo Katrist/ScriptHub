@@ -331,10 +331,12 @@ end
 
 local function UpdatePlayerTable()
 	for i, Player in ipairs(Players:GetPlayers()) do
-		if Player.Name ~= Player.DisplayName then
-			table.insert(PlayerTable, Player.DisplayName .." (@".. Player.Name ..")")
-		else
-			table.insert(PlayerTable, "@" .. Player.Name)
+		if Player ~= LocalPlayer then
+			if Player.Name ~= Player.DisplayName then
+				table.insert(PlayerTable, Player.DisplayName .." (@".. Player.Name ..")")
+			else
+				table.insert(PlayerTable, "@" .. Player.Name)
+			end			
 		end
 	end
 end
