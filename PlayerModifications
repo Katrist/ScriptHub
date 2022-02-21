@@ -2,7 +2,6 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 
 --//Variables
 local LocalPlayer = Players.LocalPlayer
@@ -29,6 +28,16 @@ local Explorer = Window:CreateFolder("Workspace")
 local Visuals = Window:CreateFolder("Visuals")
 local Credits = Window:CreateFolder("Credits")
 local KillSwitches = Window:CreateFolder("KillSwitches")
+
+for i, Player in ipairs(Players:GetPlayers()) do
+	if Player ~= LocalPlayer then
+		if Player.Name ~= Player.DisplayName then
+			table.insert(PlayerTable, Player.DisplayName .." (@".. Player.Name ..")")
+		else
+			table.insert(PlayerTable, "@" .. Player.Name)
+		end	
+	end
+end
 
 --//Disable Connections
 for i, Connection in pairs(getconnections(LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"))) do
@@ -172,9 +181,15 @@ local function ToggleFollow(Victim)
 	OriginalPivot = LocalPlayer.Character:GetPivot()
 
 	Connections["Follow"] = RunService.Stepped:Connect(function()
-		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-			LocalPlayer.Character.Humanoid.Sit = false
-			LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())			
+		if LocalPlayer.Character then
+			if Victim then
+				if Victim.Character then
+					LocalPlayer.Character.Humanoid.Sit = false
+					LocalPlayer.Character:PivotTo(Victim.Character:GetPivot())
+				end
+			else
+				return
+			end
 		end
 	end)
 end
@@ -329,20 +344,6 @@ local function FindPlayerFromFullString(FullName)
 	return playerName
 end
 
-local function UpdatePlayerTable()
-	for i, Player in ipairs(Players:GetPlayers()) do
-		if Player ~= LocalPlayer then
-			if Player.Name ~= Player.DisplayName then
-				table.insert(PlayerTable, Player.DisplayName .." (@".. Player.Name ..")")
-			else
-				table.insert(PlayerTable, "@" .. Player.Name)
-			end			
-		end
-	end
-end
-
-UpdatePlayerTable()
-
 --//Functions
 Player:Slider("WalkSpeed",{
 	min = 16; 
@@ -419,11 +420,11 @@ end)
 Player:Button("UnFollow", function()
 	if Connections["Follow"] then
 		Connections["Follow"]:Disconnect()
-	end
-	
-	if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-		LocalPlayer.Character.Humanoid.Sit = false
-		LocalPlayer.Character:PivotTo(OriginalPivot)
+		
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+			LocalPlayer.Character.Humanoid.Sit = false
+			LocalPlayer.Character:PivotTo(OriginalPivot)
+		end
 	end
 end)
 
@@ -511,19 +512,27 @@ KillSwitches:DestroyGui()
 
 --//Refreshing Dropdowns
 local function RefreshDropdowns()
-	table.clear(PlayerTable)
-	
-	UpdatePlayerTable()
-	
 	Teleport:Refresh(PlayerTable)
 	Follow:Refresh(PlayerTable)
 	Spectate:Refresh(PlayerTable)
 end
 
-Players.PlayerAdded:Connect(function()
+Players.PlayerAdded:Connect(function(Player)
+	if Player.Name ~= Player.DisplayName then
+		table.insert(PlayerTable, Player.DisplayName .." (@".. Player.Name ..")")
+	else
+		table.insert(PlayerTable, "@" .. Player.Name)
+	end	
+	
 	RefreshDropdowns()
 end)
 
-Players.PlayerRemoving:Connect(function()
+Players.PlayerRemoving:Connect(function(Player)
+	for i, Name in ipairs(PlayerTable) do
+		if Name:match(Player.Name) then
+			table.remove(PlayerTable, i)
+		end
+	end
+	
 	RefreshDropdowns()
 end)
