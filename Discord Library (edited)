@@ -6,9 +6,9 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local HttpService = game:GetService("HttpService")
-local pfp
-local user
-local tag
+local pfp = nil
+local user = nil
+local tag = nil
 local userinfo = {}
 
 pcall(function()
@@ -118,7 +118,7 @@ function DiscordLib:Window(text)
 	MainFrame.BackgroundColor3 = Color3.fromRGB(32, 34, 37)
 	MainFrame.BorderSizePixel = 0
 	MainFrame.ClipsDescendants = true
-	MainFrame.Position = UDim2.new(0.2, 0, 0.8, 0)
+	MainFrame.Position = UDim2.new(0.25, 0, 0.75, 0)
 	MainFrame.Size = UDim2.new(0, 681, 0, 396)
 	MainFrame.Parent = Discord
 
