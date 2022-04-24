@@ -58,7 +58,7 @@ windowNameLabel.Size = UDim2.new(1, 0, 0, 20)
 windowNameLabel.Font = Enum.Font.SourceSans
 windowNameLabel.Text = "Ultimate Fling"
 windowNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-windowNameLabel.TextSize = 20.000
+windowNameLabel.TextSize = 20
 
 closeButton.Name = "closeButton"
 closeButton.Parent = windowNameLabel
@@ -70,7 +70,7 @@ closeButton.Size = UDim2.new(0, 20, 0, 20)
 closeButton.Font = Enum.Font.SourceSans
 closeButton.Text = "X"
 closeButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-closeButton.TextSize = 20.000
+closeButton.TextSize = 20
 
 mainFrame.Name = "mainFrame"
 mainFrame.Parent = drag
@@ -96,7 +96,7 @@ toggleButton.Size = UDim2.new(0, 100, 0, 25)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.Text = "Start fling"
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextSize = 20.000
+toggleButton.TextSize = 20
 
 UICorner_4.Parent = toggleButton
 
@@ -109,7 +109,7 @@ rotSpeedLabel.Size = UDim2.new(0, 100, 0, 35)
 rotSpeedLabel.Font = Enum.Font.SourceSans
 rotSpeedLabel.Text = "RotSpeed"
 rotSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-rotSpeedLabel.TextSize = 14.000
+rotSpeedLabel.TextSize = 14
 rotSpeedLabel.TextYAlignment = Enum.TextYAlignment.Top
 
 UICorner_5.Parent = rotSpeedLabel
@@ -124,7 +124,7 @@ rotSpeedTextbox.ClearTextOnFocus = false
 rotSpeedTextbox.Font = Enum.Font.SourceSans
 rotSpeedTextbox.Text = "10000"
 rotSpeedTextbox.TextColor3 = Color3.fromRGB(0, 255, 0)
-rotSpeedTextbox.TextSize = 16.000
+rotSpeedTextbox.TextSize = 16
 
 flySpeedLabel.Name = "flySpeedLabel"
 flySpeedLabel.Parent = buttonsFrame
@@ -135,7 +135,7 @@ flySpeedLabel.Size = UDim2.new(0, 100, 0, 35)
 flySpeedLabel.Font = Enum.Font.SourceSans
 flySpeedLabel.Text = "FlySpeed"
 flySpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-flySpeedLabel.TextSize = 14.000
+flySpeedLabel.TextSize = 14
 flySpeedLabel.TextYAlignment = Enum.TextYAlignment.Top
 
 UICorner_6.Parent = flySpeedLabel
@@ -150,7 +150,7 @@ flySpeedTextbox.ClearTextOnFocus = false
 flySpeedTextbox.Font = Enum.Font.SourceSans
 flySpeedTextbox.Text = "1"
 flySpeedTextbox.TextColor3 = Color3.fromRGB(0, 255, 0)
-flySpeedTextbox.TextSize = 16.000
+flySpeedTextbox.TextSize = 16
 
 UICorner_7.Parent = buttonsFrame
 
@@ -176,7 +176,7 @@ notificationTemplate.Visible = false
 notificationTemplate.Font = Enum.Font.SourceSans
 notificationTemplate.Text = ""
 notificationTemplate.TextColor3 = Color3.fromRGB(255, 255, 255)
-notificationTemplate.TextSize = 19.000
+notificationTemplate.TextSize = 19
 notificationTemplate.TextWrapped = true
 
 teleportersFrame.Name = "teleportersFrame"
@@ -196,7 +196,7 @@ teleportingLabel.Size = UDim2.new(1, -10, 1, -10)
 teleportingLabel.Font = Enum.Font.SourceSans
 teleportingLabel.Text = "tping to players delay (0 = disable)"
 teleportingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-teleportingLabel.TextSize = 14.000
+teleportingLabel.TextSize = 14
 teleportingLabel.TextYAlignment = Enum.TextYAlignment.Top
 
 UICorner_8.Parent = teleportingLabel
@@ -211,15 +211,16 @@ tpingTextbox.ClearTextOnFocus = false
 tpingTextbox.Font = Enum.Font.SourceSans
 tpingTextbox.Text = "0"
 tpingTextbox.TextColor3 = Color3.fromRGB(0, 255, 0)
-tpingTextbox.TextSize = 16.000
+tpingTextbox.TextSize = 16
 
 local function align(Part0, Part1)
 	Part0.CustomPhysicalProperties = PhysicalProperties.new(0.001, 0.001, 0.001, 0.001, 0.001)
-	
+
 	local att1 = Instance.new("Attachment")
-	att1.Orientation = Vector3.new(0, 0, 0)
-	att1.Position = Vector3.new(0, 0, 0)
+	att1.Orientation = Vector3.zero
+	att1.Position = Vector3.zero
 	att1.Archivable = true
+	
 	local att0 = att1:Clone()
 
 	local ap = Instance.new("AlignPosition")
@@ -241,32 +242,32 @@ end
 local rs = game:GetService("RunService")
 
 local function notify(msg)
-	coroutine.wrap(function()
+	task.defer(function()
 		local label = notificationTemplate:Clone()
 		label.Text = msg
 		label.Parent = notificationsFrame
 		label.Size = UDim2.new(1, 0, 0, 0)
 		label.Visible = true
-		
+
 		local siz = 0
-		
+
 		while rs.Stepped:Wait() and label and label.Parent and (siz < 20) do
 			siz += 1
 			label.Size = UDim2.new(1, 0, 0, siz)
 		end
-		
+
 		if label and label.Parent then
 			task.wait(15)
 
 			while rs.Stepped:Wait() and label and label.Parent and (label.TextTransparency < 1) do
 				label.TextTransparency += 0.1
 			end
-			
+
 			if label and label.Parent then
 				label:Destroy()
 			end
 		end
-	end)()
+	end)
 end
 
 local plrs = game:GetService("Players")
@@ -278,12 +279,12 @@ local c = nil
 local function resReq()
 	local nm = Instance.new("Model")
 	lp.Character = nm
-	
+
 	local nh = Instance.new("Humanoid")
 	nh.Health = 100
 	nh.Health = 0
 	nh.Parent = nm
-	
+
 	nh:Destroy()
 	nm:Destroy()
 end
@@ -294,6 +295,7 @@ ws.DescendantRemoving:Connect(function(des)
 	if table.find(parts, des) then
 		local desn = des.Name
 		task.wait()
+		
 		if c and c.Parent then
 			notify("lost part: " .. desn)
 		end
@@ -304,31 +306,32 @@ toggleButton.MouseButton1Click:Connect(function()
 	if c and c.Parent then
 		resReq()
 		lp.Character = c
+		
 		notify("attempting to respawn...")
 	else
 		notify("Loading...")
 		c = lp.Character
-		
+
 		if not (c and c.Parent) then
 			notify("error: character not found")
-			
+
 			return nil
 		end
-		
-		local hum = c:FindFirstChildOfClass("Humanoid")
-		
+
+		local hum = c:FindFirstChildWhichIsA("Humanoid")
+
 		if not (hum and hum.Parent) then
 			notify("error: humanoid not found")
-			
+
 			return nil
 		end
-		
+
 		if hum.Health == 0 then
 			notify("error: humanoid health 0")
-			
+
 			return nil
 		end
-		
+
 		resReq()
 		lp.Character = c
 
@@ -336,22 +339,22 @@ toggleButton.MouseButton1Click:Connect(function()
 
 		if not (c and c.Parent) then
 			notify("error: character removed")
-			
+
 			return nil
 		end
-		
+
 		if not (hum and hum.Parent) then
 			notify("error: humanoid removed")
-			
+
 			return nil
 		end
-		
+
 		if hum.Health == 0 then
 			notify("error: humanoid died")
-			
+
 			return nil
 		end
-		
+
 		c:BreakJoints()
 		hum.Health = 0
 
@@ -359,12 +362,12 @@ toggleButton.MouseButton1Click:Connect(function()
 
 		if not (c and c.Parent) then
 			notify("error: character removed")
-			
+
 			return nil
 		end
-		
+
 		parts = {}
-		
+
 		for i, v in pairs(c:GetDescendants()) do
 			if v and v.Parent and v:IsA("BasePart") then
 				if v.CanCollide then
@@ -374,74 +377,75 @@ toggleButton.MouseButton1Click:Connect(function()
 				end
 			end
 		end
-		
+
 		local hrp = Instance.new("Part", c)
 		hrp.Name = "hrp"
 		hrp.Anchored = true
 		hrp.Transparency = 1
-		
+		hrp.Parent = c
+
 		pcall(function()
-			hrp.CFrame = parts[1].CFrame
+			hrp:PivotTo(parts[1]:GetPivot())
 		end)
-		
+
 		ws.CurrentCamera.CameraSubject = hrp
-		
-		for i, v in pairs(parts) do
-			if v and v.Parent then
-				align(v, hrp)
+
+		for i, part in ipairs(parts) do
+			if part and part.Parent then
+				align(part, hrp)
 			end
 		end
-		
-		coroutine.wrap(function()
+
+		task.defer(function()
 			local currentp = nil
-			
-			coroutine.wrap(function()
+
+			task.defer(function()
 				while rs.Stepped:Wait() and c and c.Parent and hrp and hrp.Parent do
 					if currentp and currentp.Parent then
 						local c1 = currentp.Character
-						
+
 						if c1 and c1.Parent then
 							local hed1 = c1:FindFirstChild("Head") or c1:FindFirstChild("Torso") or c1:FindFirstChild("HumanoidRootPart") or c1:FindFirstChildWhichIsA("BasePart")
-							
+
 							if hed1 then
 								hrp.CFrame = hed1.CFrame
 							end
 						end
 					end
 				end
-			end)()
-			
+			end)
+
 			while rs.Heartbeat:Wait() and c and c.Parent and hrp and hrp.Parent do
 				local delay = tonumber(tpingTextbox.Text)
-				
+
 				if (not delay) or (delay < 0) then
 					delay = 0
 				end
-				
+
 				if delay == 0 then
 					currentp = false
 				else
 					task.wait(delay)
 					delay = tonumber(tpingTextbox.Text)
-					
+
 					if (not delay) or (delay < 0) then
 						delay = 0
 					end
-					
+
 					if c and c.Parent and hrp and hrp.Parent and (delay ~= 0) then
 						local getp = plrs:GetPlayers()
 						local i1 = false
-						
+
 						for i, v in pairs(getp) do
 							if (v == currentp) and (v ~= lp) then
 								i1 = i
 							end
 						end
-						
+
 						if (not i1) then
 							i1 = 1
 						end
-						
+
 						local function nextp()
 							if i1 == #getp then
 								i1 = 1
@@ -450,9 +454,9 @@ toggleButton.MouseButton1Click:Connect(function()
 							end
 							currentp = getp[i1]
 						end
-						
+
 						local c1 = nil
-						
+
 						while task.wait() and not (c1 and c1.Parent) do
 							nextp()
 							if currentp == lp then
@@ -463,9 +467,9 @@ toggleButton.MouseButton1Click:Connect(function()
 					end
 				end
 			end
-		end)()
+		end)
 
-		coroutine.wrap(function()
+		task.defer(function()
 			while c and c.Parent and rs.Heartbeat:Wait() do
 				for i, v in pairs(parts) do
 					if v and v.Parent then
@@ -475,9 +479,9 @@ toggleButton.MouseButton1Click:Connect(function()
 					end
 				end
 			end
-		end)()
+		end)
 
-		coroutine.wrap(function()
+		task.defer(function()
 			while rs.Stepped:Wait() and c and c.Parent do
 				for i, v in pairs(parts) do
 					if v and v.Parent then
@@ -485,32 +489,32 @@ toggleButton.MouseButton1Click:Connect(function()
 					end
 				end
 			end
-		end)()
+		end)
 
-		coroutine.wrap(function()
+		task.defer(function()
 			local ctrlf = {
 				["w"] = false,
 				["a"] = false,
 				["s"] = false,
 				["d"] = false
 			}
-			
+
 			mouse.KeyDown:Connect(function(key)
 				key = key:lower()
-				
+
 				if ctrlf[key] ~= nil then
 					ctrlf[key] = true
 				end
 			end)
-			
+
 			mouse.KeyUp:Connect(function(key)
 				key = key:lower()
-				
+
 				if ctrlf[key] ~= nil then
 					ctrlf[key] = false
 				end
 			end)
-			
+
 			while rs.RenderStepped:Wait() and c and c.Parent do
 				if hrp and hrp.Parent then
 					local flyspeed = tonumber(flySpeedTextbox.Text)
@@ -518,18 +522,18 @@ toggleButton.MouseButton1Click:Connect(function()
 					local lr = ((ctrlf["a"] and -flyspeed) or 0) + ((ctrlf["d"] and flyspeed) or 0)
 					local camcf = ws.CurrentCamera.CFrame
 					local caX, caY, caZ, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9 = camcf:GetComponents()
-					
+
 					local flycf = hrp.CFrame
 					flycf = CFrame.new(flycf.X, flycf.Y, flycf.Z, ca1, ca2, ca3, ca4, ca5, ca6, ca7, ca8, ca9)
 					flycf += camcf.lookVector * fb
 					flycf += camcf.rightVector * lr
-					
+
 					hrp.CFrame = flycf
 				end
 			end
 
 			local c1 = lp.Character
-			
+
 			if c1 and c1.Parent then
 				notify("respawned")
 			end
@@ -537,7 +541,7 @@ toggleButton.MouseButton1Click:Connect(function()
 			if toggleButton and toggleButton.Parent then
 				toggleButton.Text = "Start fling"
 			end
-		end)()
+		end)
 
 		if toggleButton and toggleButton.Parent then
 			toggleButton.Text = "Respawn"
@@ -551,6 +555,6 @@ closeButton.MouseButton1Click:Connect(function()
 	if c and c.Parent then
 		resReq()
 	end
-	
+
 	ultimateFling:Destroy()
 end)
