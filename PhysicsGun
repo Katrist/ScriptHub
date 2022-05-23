@@ -211,7 +211,7 @@ table.insert(
 
             -- Function to bind to render stepped if player is on PC
             local function pcFrame()
-                frame(mouse.Hit.Position)
+                frame(mouse.Hit.p)
             end
 
             -- Function to bind to touch moved if player is on mobile
@@ -819,27 +819,21 @@ table.insert(
             line.Anchored = true
             line.formFactor = 0
             line.Size = Vector3.new(0.4, 0.4, 1)
-			
             local mesh = Instance.new("BlockMesh")
             mesh.Parent = line
-
             while true do
                 if (check.Value == nil) then
                     break
                 end
-
                 if (part1 == nil or part2 == nil or parent == nil) then
                     break
                 end
-
                 if (part1.Parent == nil or part2.Parent == nil) then
                     break
                 end
-
                 if (parent.Parent == nil) then
                     break
                 end
-
                 local lv = CFrame.new(part1.Position, part2.Position)
                 local dist = (part1.Position - part2.Position).magnitude
                 line.Parent = parent
@@ -872,7 +866,7 @@ table.insert(
             mousedown = false
             found = false
             BP = Instance.new("BodyPosition")
-            BP.MaxForce = Vector3.new(math.huge * math.huge, math.huge * math.huge, math.huge * math.huge) --pwns everyone elses bodyposition
+            BP.maxForce = Vector3.new(math.huge * math.huge, math.huge * math.huge, math.huge * math.huge) --pwns everyone elses bodyposition
             BP.P = BP.P * 10 --faster movement. less bounceback.
             dist = nil
             point = Instance.new("Part")
@@ -882,7 +876,7 @@ table.insert(
             point.Shape = 0
             point.Material = "Neon"
             point.BrickColor = BrickColor.new("Toothpaste")
-            point.Size = Vector3.one()
+            point.Size = Vector3.new(1, 1, 1)
             point.CanCollide = false
             local mesh = Instance.new("SpecialMesh")
             mesh.MeshType = "Sphere"
@@ -894,25 +888,21 @@ table.insert(
             objval = nil
             local hooked = false
             local hookBP = BP:clone()
-            hookBP.MaxForce = Vector3.new(30000, 30000, 30000)
+            hookBP.maxForce = Vector3.new(30000, 30000, 30000)
 
             function LineConnect(part1, part2, parent)
                 local p1 = Instance.new("ObjectValue")
                 p1.Value = part1
                 p1.Name = "Part1"
-
                 local p2 = Instance.new("ObjectValue")
                 p2.Value = part2
                 p2.Name = "Part2"
-
                 local par = Instance.new("ObjectValue")
                 par.Value = parent
                 par.Name = "Par"
-
                 local col = Instance.new("ObjectValue")
                 col.Value = color
                 col.Name = "Color"
-
                 local s = lineconnect:clone()
                 s.Disabled = false
                 p1.Parent = s
@@ -929,19 +919,15 @@ table.insert(
                 if (mousedown == true) then
                     return
                 end
-
                 mousedown = true
-
                 coroutine.resume(
                     coroutine.create(
                         function()
                             local p = point:clone()
                             p.Parent = tool
                             LineConnect(front, p, workspace)
-
                             while (mousedown == true) do
                                 p.Parent = tool
-
                                 if (object == nil) then
                                     if (mouse.Target == nil) then
                                         local lv = CFrame.new(front.Position, mouse.Hit.p)
@@ -953,15 +939,12 @@ table.insert(
                                     LineConnect(front, object, workspace)
                                     break
                                 end
-
                                 task.wait()
                             end
-
                             p:remove()
                         end
                     )
                 )
-
                 while (mousedown == true) do
                     if (mouse.Target ~= nil) then
                         local t = mouse.Target
@@ -971,21 +954,17 @@ table.insert(
                             break
                         end
                     end
-
                     task.wait()
                 end
-
                 while (mousedown == true) do
                     if (object.Parent == nil) then
                         break
                     end
-
-                    local lv = CFrame.lookAt(front.Position, mouse.Hit.Position)
+                    local lv = CFrame.new(front.Position, mouse.Hit.p)
                     BP.Parent = object
-                    BP.Position = front.Position + lv.LookVector * dist
+                    BP.position = front.Position + lv.lookVector * dist
                     task.wait()
                 end
-
                 BP:remove()
                 object = nil
                 objval.Value = nil
@@ -994,27 +973,23 @@ table.insert(
             function onKeyDown(key, mouse)
                 local key = key:lower()
                 local yesh = false
-
                 if (key == "q") then
                     if (dist >= 5) then
                         dist = dist - 5
                     end
                 end
-
                 if key == "" then
                     if (object == nil) then
                         return
                     end
-
                     for _, v in pairs(object:children()) do
                         if v.className == "BodyGyro" then
                             return nil
                         end
                     end
-
                     BG = Instance.new("BodyGyro")
                     BG.maxTorque = Vector3.new(math.huge, math.huge, math.huge)
-                    BG.CFrame = CFrame.new(object.CFrame.Position)
+                    BG.cframe = CFrame.new(object.CFrame.p)
                     BG.Parent = object
                     repeat
                         task.wait()
@@ -1336,7 +1311,6 @@ table.insert(
 )
 for i, v in pairs(mas:GetChildren()) do
     v.Parent = game:GetService("Players").LocalPlayer.Backpack
-	
     pcall(
         function()
             v:MakeJoints()
@@ -1347,7 +1321,7 @@ end
 mas:Destroy()
 
 for i, v in pairs(cors) do
-    task.defer(
+    spawn(
         function()
             pcall(v)
         end
