@@ -41,8 +41,8 @@ local ESP = Window:MakeTab({
 
 ESP:AddToggle({
 	Name = "ESP",
-	Save = true,
 	Default = false,
+	Save = true,
 	Callback = function(Bool)
 		if Bool then
 			characterFolder = Instance.new("Model")
@@ -101,8 +101,8 @@ ESP:AddToggle({
 
 ESP:AddToggle({
 	Name = "Highlight Yourself",
-	Save = true,
 	Default = false,
+	Save = true,
 	Callback = function(Bool)
 		highlightYourself = Bool
 		
@@ -132,8 +132,8 @@ ESP:AddToggle({
 
 ESP:AddToggle({
 	Name = "Rainbow ESP",
-	Save = true,
 	Default = false,
+	Save = true,
 	Callback = function(Bool)
 		rainbowESP = Bool
 
@@ -157,9 +157,9 @@ ESP:AddToggle({
 
 ESP:AddColorpicker({
 	Name = "ESP Color",
+	Default = Color3.fromRGB(255, 255, 255),
 	Save = true,
 	Flag = "ColorPicker",
-	Default = Color3.fromRGB(255, 255, 255),
 	Callback = function(color)
 		highlightColor = color
 		
@@ -176,10 +176,10 @@ ESP:AddColorpicker({
 
 ESP:AddSlider({
 	Name = "Fill Transparency",
-	Save = true,
 	Min = 0,
 	Max = 100,
 	Default = 50,
+	Save = true,
 	Color = Color3.fromRGB(141, 141, 141),
 	Increment = 10,
 	ValueName = "%",
