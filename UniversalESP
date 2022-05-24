@@ -1,0 +1,183 @@
+--//Services
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+
+--//Libraries
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
+
+--//Variables
+local LocalPlayer = Players.LocalPlayer
+
+--//Controls
+local characterFolder = nil
+local highlightYourself = false
+local highlightColor = nil
+local fillTransparency = 0.5
+
+--//Tables
+local Connections = {}
+
+--//Initialization
+OrionLib:MakeNotification({
+	Name = "Universal ESP is loading...",
+	Content = "Scripted by Katrist#3130",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+})
+
+local Window = OrionLib:MakeWindow({
+	Name = "Universal ESP", 
+	HidePremium = false, 
+	SaveConfig = true, 
+	ConfigFolder = "ESPConfig"
+})
+
+local ESP = Window:MakeTab({
+	Name = "ESP",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+ESP:AddToggle({
+	Name = "ESP",
+	Default = false,
+	Callback = function(Bool)
+		if Bool then
+			characterFolder = Instance.new("Model")
+			characterFolder.Name = HttpService:GenerateGUID(false)
+			
+			local Highlight = Instance.new("Highlight")
+			Highlight.Name = HttpService:GenerateGUID(false)
+			Highlight.FillColor = highlightColor
+			Highlight.OutlineColor = highlightColor
+			Highlight.FillTransparency = fillTransparency
+			Highlight.Parent = characterFolder
+			
+			characterFolder.Parent = workspace
+			
+			for i, player: Player in ipairs(Players:GetPlayers()) do
+				if player == LocalPlayer and not highlightYourself then
+					continue
+				end
+				
+				if player.Character then
+					player.Character.Parent = characterFolder
+				end
+				
+				Connections[player] = player.CharacterAdded:Connect(function(character)
+					character.Parent = characterFolder
+				end)
+			end
+			
+			Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
+				Connections[player] = player.CharacterAdded:Connect(function(character)
+					character.Parent = characterFolder
+				end)
+			end)
+		else
+			for i, connection: RBXScriptConnection in ipairs(Connections) do
+				connection:Disconnect()
+			end
+			
+			if characterFolder then
+				local highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
+				
+				if highlight then
+					highlight:Destroy()
+				end
+				
+				for i, character in ipairs(characterFolder:GetChildren()) do
+					character.Parent = workspace
+				end
+				
+				characterFolder:Destroy()
+				characterFolder = nil
+			end
+		end
+	end    
+})
+
+ESP:AddToggle({
+	Name = "Highlight Yourself",
+	Default = false,
+	Callback = function(Bool)
+		highlightYourself = Bool
+		
+		if Bool then
+			if characterFolder then
+				if LocalPlayer.Character then
+					LocalPlayer.Character.Parent = characterFolder
+				end
+
+				Connections[LocalPlayer] = LocalPlayer.CharacterAdded:Connect(function(character)
+					character.Parent = characterFolder
+				end)
+			end
+		else
+			local connection = Connections[LocalPlayer]
+			
+			if connection then
+				connection:Disconnect()
+			end
+			
+			if LocalPlayer.Character then
+				LocalPlayer.Character.Parent = workspace
+			end
+		end
+	end    
+})
+
+ESP:AddColorpicker({
+	Name = "ESP Color",
+	Default = Color3.fromRGB(255, 255, 255),
+	Callback = function(color)
+		highlightColor = color
+		
+		if characterFolder then
+			local Highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
+			
+			if Highlight then
+				Highlight.FillColor = highlightColor
+				Highlight.OutlineColor = highlightColor
+			end
+		end
+	end
+})
+
+ESP:AddSlider({
+	Name = "Fill Transparency",
+	Min = 0,
+	Max = 100,
+	Default = 50,
+	Color = Color3.fromRGB(141, 141, 141),
+	Increment = 10,
+	ValueName = "%",
+	Callback = function(number)
+		fillTransparency = number / 100
+
+		if characterFolder then
+			local Highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
+
+			if Highlight then
+				Highlight.FillTransparency = fillTransparency
+			end
+		end
+	end    
+})
+
+
+local Credits = Window:MakeTab({
+	Name = "Credits",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Credits:AddParagraph("Katrist#3130",
+	"Scripter of the ESP"
+)
+
+Credits:AddParagraph("shlex#0001",
+	"Designed and scripted this UI library"
+)
+
+OrionLib:Init()
