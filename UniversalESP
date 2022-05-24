@@ -140,11 +140,12 @@ ESP:AddToggle({
 	Callback = function(Bool)
 		rainbowESP = Bool
 
-		if rainbowESP then
+		if rainbowESP then\
+			local ESPColor = OrionLib.Flags["ESPColor"]
 			local hue, saturation, value = highlightColor:ToHSV()
 			
 			while rainbowESP do
-				OrionLib.Flags["ColorPicker"]:Set(Color3.fromHSV(hue, 1, 1))
+				ESPColor:Set(Color3.fromHSV(hue, 1, 1))
 				hue += 1/100
 				
 				task.wait(0.05)
