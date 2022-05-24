@@ -11,6 +11,7 @@ local LocalPlayer = Players.LocalPlayer
 --//Controls
 local characterFolder = nil
 local highlightYourself = false
+local rainbowESP = false
 local highlightColor = nil
 local fillTransparency = 0.5
 
@@ -127,8 +128,32 @@ ESP:AddToggle({
 	end    
 })
 
+ESP:AddToggle({
+	Name = "Rainbow ESP",
+	Default = false,
+	Callback = function(Bool)
+		rainbowESP = Bool
+
+		if rainbowESP then
+			local hue, saturation, value = highlightColor:ToHSV()
+			
+			while rainbowESP do
+				OrionLib.Flags["ColorPicker"]:Set(Color3.fromHSV(hue, 1, 1))
+				hue += 1/100
+				
+				task.wait(0.05)
+				
+				if hue >= 1 then
+					hue = 0
+				end
+			end
+		end
+	end    
+})
+
 ESP:AddColorpicker({
 	Name = "ESP Color",
+	Flag = "ColorPicker",
 	Default = Color3.fromRGB(255, 255, 255),
 	Callback = function(color)
 		highlightColor = color
@@ -177,7 +202,7 @@ Credits:AddParagraph("Katrist#3130",
 )
 
 Credits:AddParagraph("shlex#0001",
-	"Designed and scripted this UI library"
+	"Designed and scripted Orion"
 )
 
 OrionLib:Init()
