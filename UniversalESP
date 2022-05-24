@@ -20,7 +20,7 @@ local Connections = {}
 --//Initialization
 OrionLib:MakeNotification({
 	Name = "Universal ESP is loading...",
-	Content = "Scripted by Katrist#3130",
+	Content = "Welcome ".. LocalPlayer.Name ..".\n\nScripted by Katrist#3130",
 	Image = "rbxassetid://4483345998",
 	Time = 5
 })
@@ -29,7 +29,7 @@ local Window = OrionLib:MakeWindow({
 	Name = "Universal ESP", 
 	HidePremium = false, 
 	SaveConfig = true, 
-	ConfigFolder = "ESPConfig"
+	ConfigFolder = "ESPConfiguration"
 })
 
 local ESP = Window:MakeTab({
@@ -103,7 +103,7 @@ ESP:AddToggle({
 	Callback = function(Bool)
 		highlightYourself = Bool
 		
-		if Bool then
+		if highlightYourself then
 			if characterFolder then
 				if LocalPlayer.Character then
 					LocalPlayer.Character.Parent = characterFolder
