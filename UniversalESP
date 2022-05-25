@@ -1,14 +1,18 @@
 --//Services
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
+local LogService = game:GetService("LogService")
 
 --//Libraries
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
 
 --//Variables
 local LocalPlayer = Players.LocalPlayer
+local mt = getrawmetatable(game)
+local protect = newcclosure
 
 --//Controls
+local old = mt.__namecall
 local characterFolder = nil
 local highlightYourself = false
 local rainbowESP = false
@@ -19,6 +23,24 @@ local fillTransparency = 0.5
 local Connections = {}
 
 --//Initialization
+setreadonly(mt, false)
+
+mt.__namecall = newcclosure(function(self, ...)
+	local method = getnamecallmethod()
+
+	if method == "Kick" then
+		return
+	end
+
+	return old(self, ...)
+end)
+
+setreadonly(mt, true)
+
+for i, connection in pairs(getconnections(LogService.MessageOut)) do
+	connection:Disable()
+end
+
 OrionLib:MakeNotification({
 	Name = "Universal ESP is loading...",
 	Content = "Welcome ".. LocalPlayer.Name ..".\n\nScripted by Katrist#3130",
