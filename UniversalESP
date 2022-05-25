@@ -13,6 +13,7 @@ local mt = getrawmetatable(game)
 --//Controls
 local old = mt.__namecall
 local characterFolder = nil
+local highlight = nil
 local highlightYourself = false
 local rainbowESP = false
 local highlightColor = nil
@@ -66,12 +67,13 @@ ESP:AddToggle({
 			characterFolder = Instance.new("Model")
 			characterFolder.Name = HttpService:GenerateGUID(false)
 
-			local Highlight = Instance.new("Highlight")
-			Highlight.Name = HttpService:GenerateGUID(false)
-			Highlight.FillColor = highlightColor
-			Highlight.OutlineColor = highlightColor
-			Highlight.FillTransparency = fillTransparency
-			Highlight.Parent = characterFolder
+			highlight = Instance.new("Highlight")
+			highlight.Adornee = characterFolder
+			highlight.Name = HttpService:GenerateGUID(false)
+			highlight.FillColor = highlightColor
+			highlight.OutlineColor = highlightColor
+			highlight.FillTransparency = fillTransparency
+			highlight.Parent = gethui()
 
 			characterFolder.Parent = workspace
 
@@ -115,12 +117,6 @@ ESP:AddToggle({
 			end
 
 			if characterFolder then
-				local highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
-
-				if highlight then
-					highlight:Destroy()
-				end
-
 				for i, character in ipairs(characterFolder:GetChildren()) do
 					local Humanoid = character.Humanoid
 					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
@@ -129,7 +125,12 @@ ESP:AddToggle({
 
 					character.Parent = workspace
 				end
-
+				
+				if highlight then
+					highlight:Destroy()
+					highlight = nil
+				end
+				
 				characterFolder:Destroy()
 				characterFolder = nil
 			end
@@ -147,21 +148,11 @@ ESP:AddToggle({
 
 		if highlightYourself then
 			if characterFolder then
-				if LocalPlayer.Character then
-					local Humanoid = LocalPlayer.Character:WaitForChild("Humanoid")
-					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
-					Humanoid.NameDisplayDistance = math.huge
-					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
-					
+				if LocalPlayer.Character then			
 					LocalPlayer.Character.Parent = characterFolder
 				end
 
 				Connections[LocalPlayer] = LocalPlayer.CharacterAdded:Connect(function(character)
-					local Humanoid = character:WaitForChild("Humanoid")
-					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
-					Humanoid.NameDisplayDistance = math.huge
-					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
-
 					character.Parent = characterFolder
 				end)
 			end
@@ -172,12 +163,7 @@ ESP:AddToggle({
 				connection:Disconnect()
 			end
 
-			if LocalPlayer.Character then	
-				local Humanoid = LocalPlayer.Character.Humanoid
-				Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
-				Humanoid.NameDisplayDistance = 100
-				Humanoid.NameOcclusion = Enum.NameOcclusion.OccludeAll
-				
+			if LocalPlayer.Character then
 				LocalPlayer.Character.Parent = workspace
 			end
 		end
@@ -218,13 +204,9 @@ ESP:AddColorpicker({
 	Callback = function(color)
 		highlightColor = color
 
-		if characterFolder then
-			local Highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
-
-			if Highlight then
-				Highlight.FillColor = highlightColor
-				Highlight.OutlineColor = highlightColor
-			end
+		if characterFolder and highlight then
+			highlight.FillColor = highlightColor
+			highlight.OutlineColor = highlightColor
 		end
 	end
 })
@@ -242,12 +224,8 @@ ESP:AddSlider({
 	Callback = function(number)
 		fillTransparency = number / 100
 
-		if characterFolder then
-			local Highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
-
-			if Highlight then
-				Highlight.FillTransparency = fillTransparency
-			end
+		if characterFolder and highlight then
+			highlight.FillTransparency = fillTransparency
 		end
 	end    
 })
