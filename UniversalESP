@@ -21,6 +21,7 @@ local fillTransparency = 0.5
 
 --//Tables
 local Connections = {}
+local NameTags = {}
 local Names = {
 	[119112856] = "Owner",
 	[3271865660] = "dumbass"
@@ -42,10 +43,11 @@ end)
 setreadonly(mt, true)
 
 local textDisplay = Names[LocalPlayer.UserId] or LocalPlayer.DisplayName
+local scripter = textDisplay == "Owner" and "you" or "Katrist#3130"
 
 OrionLib:MakeNotification({
 	Name = "Universal ESP is loading...",
-	Content = "Welcome ".. textDisplay ..".\n\nScripted by Katrist#3130",
+	Content = "Welcome ".. textDisplay ..".\n\nScripted by ".. scripter ..".",
 	Image = "rbxassetid://4483345998",
 	Time = 5
 })
@@ -64,11 +66,16 @@ local ESP = Window:MakeTab({
 })
 
 --//Functions
-local function AddNameTag(character: Model)
-	local Head = character:WaitForChild("Head")
+local function AddNameTag(player: Player)
+	local Head = player.Character:WaitForChild("Head", 1)
+	
+	if not Head then
+		return
+	end
 	
 	local Username = Instance.new("BillboardGui")
 	Username.Name = "Username"
+	Username.Adornee = Head
 	Username.Active = true
 	Username.AlwaysOnTop = true
 	Username.Size = UDim2.new(0, 350, 0, 125)
@@ -96,19 +103,24 @@ local function AddNameTag(character: Model)
 	Username1.TextSize = 15
 	Username1.RichText = true
 	Username1.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Username1.Text = character.Name
+	Username1.Text = player.DisplayName
 	Username1.TextWrapped = true
 	Username1.Font = Enum.Font.SourceSansBold
 	Username1.TextWrap = true
 	Username1.TextScaled = false
 	Username1.Parent = Frame
 	
-	Username.Parent = Head
+	NameTags[player] = Username
+	Username.Parent = gethui()
 end
 
-local function RemoveNameTag(character: Model)
-	local Head = character.Head
-	Head.Username:Destroy()
+local function RemoveNameTag(player: Player)
+	local nameTag = NameTags[player]
+	
+	if nameTag then
+		nameTag:Destroy()
+		NameTags[player] = nil
+	end
 end
 
 ESP:AddToggle({
@@ -140,25 +152,46 @@ ESP:AddToggle({
 					player.Character.Parent = characterFolder
 					
 					if player ~= LocalPlayer then
-						AddNameTag(player.Character)
+						RemoveNameTag(player)
+						AddNameTag(player)
 					end
 				end
 
-				Connections[player] = player.CharacterAdded:Connect(function(character)
+				Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
 					character.Parent = characterFolder
 					
 					if player ~= LocalPlayer then
-						AddNameTag(player.Character)
+						RemoveNameTag(player)
+						AddNameTag(player)
 					end
+				end)
+				
+				Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
+					RemoveNameTag(player)
 				end)
 			end
 
 			Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
-				Connections[player] = player.CharacterAdded:Connect(function(character)
+				Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
 					character.Parent = characterFolder
 					
-					AddNameTag(player.Character)
+					RemoveNameTag(player)
+					AddNameTag(player)
 				end)
+				
+				Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
+					RemoveNameTag(player)
+				end)
+			end)
+			
+			Connections["PlayerRemoving"] = Players.PlayerRemoving:Connect(function(player)
+				RemoveNameTag(player)
+				
+				for i, connection in pairs(Connections) do
+					if i:match(player.Name) then
+						connection:Disconnect()
+					end
+				end
 			end)
 		else
 			for i, connection: RBXScriptConnection in ipairs(Connections) do
@@ -166,12 +199,13 @@ ESP:AddToggle({
 			end
 
 			if characterFolder then
-				for i, character in ipairs(characterFolder:GetChildren()) do
-					if character ~= LocalPlayer.Character then
-						RemoveNameTag(character)
-					end
-					
+				for i, character in ipairs(characterFolder:GetChildren()) do	
 					character.Parent = workspace
+				end
+				
+				for i, nametag in pairs(NameTags) do
+					nametag:Destroy()
+					NameTags[i] = nil
 				end
 
 				if highlight then
