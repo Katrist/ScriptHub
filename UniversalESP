@@ -57,6 +57,54 @@ local ESP = Window:MakeTab({
 	PremiumOnly = false
 })
 
+--//Functions
+local function AddNameTag(character: Model)
+	local Head = character:WaitForChild("Head")
+	
+	local Username = Instance.new("BillboardGui")
+	Username.Name = "Username"
+	Username.Active = true
+	Username.AlwaysOnTop = true
+	Username.Size = UDim2.new(0, 350, 0, 125)
+	Username.MaxDistance = math.huge
+	Username.StudsOffset = Vector3.new(0, 2, 0)
+
+	local Frame = Instance.new("Frame")
+	Frame.Size = UDim2.new(1, 0, 1.3, 0)
+	Frame.BackgroundTransparency = 1
+	Frame.BorderSizePixel = 0
+	Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Frame.Parent = Username
+
+	local Username1 = Instance.new("TextLabel")
+	Username1.Name = "Username"
+	Username1.BorderMode = Enum.BorderMode.Middle
+	Username1.Size = UDim2.new(1, 0, 0.65, 0)
+	Username1.BorderColor3 = Color3.fromRGB(255, 255, 255)
+	Username1.BackgroundTransparency = 1
+	Username1.BorderSizePixel = 0
+	Username1.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+	Username1.FontSize = Enum.FontSize.Size28
+	Username1.TextStrokeTransparency = 0
+	Username1.TextTruncate = Enum.TextTruncate.AtEnd
+	Username1.TextSize = 15
+	Username1.RichText = true
+	Username1.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Username1.Text = character.Name
+	Username1.TextWrapped = true
+	Username1.Font = Enum.Font.SourceSansBold
+	Username1.TextWrap = true
+	Username1.TextScaled = false
+	Username1.Parent = Frame
+	
+	Username.Parent = Head
+end
+
+local function RemoveNameTag(character: Model)
+	local Head = character:WaitForChild("Head")
+	Head.Username:Destroy()
+end
+
 ESP:AddToggle({
 	Name = "ESP",
 	Default = false,
@@ -68,8 +116,8 @@ ESP:AddToggle({
 			characterFolder.Name = HttpService:GenerateGUID(false)
 
 			highlight = Instance.new("Highlight")
-			highlight.Adornee = characterFolder
 			highlight.Name = HttpService:GenerateGUID(false)
+			highlight.Adornee = characterFolder
 			highlight.FillColor = highlightColor
 			highlight.OutlineColor = highlightColor
 			highlight.FillTransparency = fillTransparency
@@ -83,32 +131,27 @@ ESP:AddToggle({
 				end
 
 				if player.Character then
-					local Humanoid = player.Character.Humanoid
-					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
-					Humanoid.NameDisplayDistance = math.huge
-					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
-
 					player.Character.Parent = characterFolder
+					
+					if player ~= LocalPlayer then
+						AddNameTag(player.Character)
+					end
 				end
 
 				Connections[player] = player.CharacterAdded:Connect(function(character)
-					local Humanoid = character:WaitForChild("Humanoid")
-					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
-					Humanoid.NameDisplayDistance = math.huge
-					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
-
 					character.Parent = characterFolder
+					
+					if player ~= LocalPlayer then
+						AddNameTag(player.Character)
+					end
 				end)
 			end
 
 			Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
 				Connections[player] = player.CharacterAdded:Connect(function(character)
-					local Humanoid = character:WaitForChild("Humanoid")
-					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
-					Humanoid.NameDisplayDistance = math.huge
-					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
-
 					character.Parent = characterFolder
+					
+					AddNameTag(player.Character)
 				end)
 			end)
 		else
@@ -118,19 +161,16 @@ ESP:AddToggle({
 
 			if characterFolder then
 				for i, character in ipairs(characterFolder:GetChildren()) do
-					local Humanoid = character.Humanoid
-					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
-					Humanoid.NameDisplayDistance = 100
-					Humanoid.NameOcclusion = Enum.NameOcclusion.OccludeAll
-
+					RemoveNameTag(character)
+					
 					character.Parent = workspace
 				end
-				
+
 				if highlight then
 					highlight:Destroy()
 					highlight = nil
 				end
-				
+
 				characterFolder:Destroy()
 				characterFolder = nil
 			end
