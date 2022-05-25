@@ -9,7 +9,6 @@ local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shle
 --//Variables
 local LocalPlayer = Players.LocalPlayer
 local mt = getrawmetatable(game)
-local protect = newcclosure
 
 --//Controls
 local old = mt.__namecall
@@ -36,10 +35,6 @@ mt.__namecall = newcclosure(function(self, ...)
 end)
 
 setreadonly(mt, true)
-
-for i, connection in pairs(getconnections(LogService.MessageOut)) do
-	connection:Disable()
-end
 
 OrionLib:MakeNotification({
 	Name = "Universal ESP is loading...",
@@ -70,32 +65,47 @@ ESP:AddToggle({
 		if Bool then
 			characterFolder = Instance.new("Model")
 			characterFolder.Name = HttpService:GenerateGUID(false)
-			
+
 			local Highlight = Instance.new("Highlight")
 			Highlight.Name = HttpService:GenerateGUID(false)
 			Highlight.FillColor = highlightColor
 			Highlight.OutlineColor = highlightColor
 			Highlight.FillTransparency = fillTransparency
 			Highlight.Parent = characterFolder
-			
+
 			characterFolder.Parent = workspace
-			
+
 			for i, player: Player in ipairs(Players:GetPlayers()) do
 				if player == LocalPlayer and not highlightYourself then
 					continue
 				end
-				
+
 				if player.Character then
+					local Humanoid = player.Character.Humanoid
+					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
+					Humanoid.NameDisplayDistance = math.huge
+					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
+
 					player.Character.Parent = characterFolder
 				end
-				
+
 				Connections[player] = player.CharacterAdded:Connect(function(character)
+					local Humanoid = character:WaitForChild("Humanoid")
+					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
+					Humanoid.NameDisplayDistance = math.huge
+					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
+
 					character.Parent = characterFolder
 				end)
 			end
-			
+
 			Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
 				Connections[player] = player.CharacterAdded:Connect(function(character)
+					local Humanoid = character:WaitForChild("Humanoid")
+					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
+					Humanoid.NameDisplayDistance = math.huge
+					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
+
 					character.Parent = characterFolder
 				end)
 			end)
@@ -103,18 +113,23 @@ ESP:AddToggle({
 			for i, connection: RBXScriptConnection in ipairs(Connections) do
 				connection:Disconnect()
 			end
-			
+
 			if characterFolder then
 				local highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
-				
+
 				if highlight then
 					highlight:Destroy()
 				end
-				
+
 				for i, character in ipairs(characterFolder:GetChildren()) do
+					local Humanoid = character.Humanoid
+					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
+					Humanoid.NameDisplayDistance = 100
+					Humanoid.NameOcclusion = Enum.NameOcclusion.OccludeAll
+
 					character.Parent = workspace
 				end
-				
+
 				characterFolder:Destroy()
 				characterFolder = nil
 			end
@@ -129,25 +144,40 @@ ESP:AddToggle({
 	Flag = "HighlightYourself",
 	Callback = function(Bool)
 		highlightYourself = Bool
-		
+
 		if highlightYourself then
 			if characterFolder then
 				if LocalPlayer.Character then
+					local Humanoid = LocalPlayer.Character:WaitForChild("Humanoid")
+					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
+					Humanoid.NameDisplayDistance = math.huge
+					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
+					
 					LocalPlayer.Character.Parent = characterFolder
 				end
 
 				Connections[LocalPlayer] = LocalPlayer.CharacterAdded:Connect(function(character)
+					local Humanoid = character:WaitForChild("Humanoid")
+					Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Subject
+					Humanoid.NameDisplayDistance = math.huge
+					Humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
+
 					character.Parent = characterFolder
 				end)
 			end
 		else
 			local connection = Connections[LocalPlayer]
-			
+
 			if connection then
 				connection:Disconnect()
 			end
-			
-			if LocalPlayer.Character then
+
+			if LocalPlayer.Character then	
+				local Humanoid = LocalPlayer.Character.Humanoid
+				Humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.Viewer
+				Humanoid.NameDisplayDistance = 100
+				Humanoid.NameOcclusion = Enum.NameOcclusion.OccludeAll
+				
 				LocalPlayer.Character.Parent = workspace
 			end
 		end
@@ -165,13 +195,13 @@ ESP:AddToggle({
 		if rainbowESP then
 			local ESPColor = OrionLib.Flags["ESPColor"]
 			local hue, saturation, value = highlightColor:ToHSV()
-			
+
 			while rainbowESP do
 				ESPColor:Set(Color3.fromHSV(hue, 1, 1))
 				hue += 1/100
-				
+
 				task.wait(0.05)
-				
+
 				if hue >= 1 then
 					hue = 0
 				end
@@ -187,10 +217,10 @@ ESP:AddColorpicker({
 	Flag = "ESPColor",
 	Callback = function(color)
 		highlightColor = color
-		
+
 		if characterFolder then
 			local Highlight = characterFolder:FindFirstChildWhichIsA("Highlight")
-			
+
 			if Highlight then
 				Highlight.FillColor = highlightColor
 				Highlight.OutlineColor = highlightColor
