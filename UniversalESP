@@ -21,6 +21,10 @@ local fillTransparency = 0.5
 
 --//Tables
 local Connections = {}
+local Names = {
+	[119112856] = "Owner",
+	[3271865660] = "dumbass"
+}
 
 --//Initialization
 setreadonly(mt, false)
@@ -37,9 +41,11 @@ end)
 
 setreadonly(mt, true)
 
+local textDisplay = Names[LocalPlayer.UserId] or LocalPlayer.DisplayName
+
 OrionLib:MakeNotification({
 	Name = "Universal ESP is loading...",
-	Content = "Welcome ".. LocalPlayer.Name ..".\n\nScripted by Katrist#3130",
+	Content = "Welcome ".. textDisplay ..".\n\nScripted by Katrist#3130",
 	Image = "rbxassetid://4483345998",
 	Time = 5
 })
@@ -101,7 +107,7 @@ local function AddNameTag(character: Model)
 end
 
 local function RemoveNameTag(character: Model)
-	local Head = character:WaitForChild("Head")
+	local Head = character.Head
 	Head.Username:Destroy()
 end
 
@@ -161,7 +167,9 @@ ESP:AddToggle({
 
 			if characterFolder then
 				for i, character in ipairs(characterFolder:GetChildren()) do
-					RemoveNameTag(character)
+					if character ~= LocalPlayer.Character then
+						RemoveNameTag(character)
+					end
 					
 					character.Parent = workspace
 				end
