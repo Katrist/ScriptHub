@@ -1,383 +1,386 @@
---//Services
-local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
-local LogService = game:GetService("LogService")
+--//Prevents errors
+pcall(function()
+	--//Services
+	local Players = game:GetService("Players")
+	local HttpService = game:GetService("HttpService")
+	local LogService = game:GetService("LogService")
 
---//Libraries
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
-
---//Variables
-local LocalPlayer = Players.LocalPlayer
-local mt = getrawmetatable(game)
-
---//Controls
-local old = mt.__namecall
-local characterFolder = nil
-local highlight = nil
-local highlightYourself = false
-local rainbowESP = false
-local highlightColor = nil
-local fillTransparency = 0.5
-
---//Tables
-local Connections = {}
-local NameTags = {}
-local Names = {
-	[119112856] = "Owner",
-	[3271865660] = "dumbass"
-}
-
---//Initialization
-setreadonly(mt, false)
-
-mt.__namecall = newcclosure(function(self, ...)
-	local method = getnamecallmethod()
-
-	if method == "Kick" then
-		return
-	end
-
-	return old(self, ...)
-end)
-
-setreadonly(mt, true)
-
-for i, connection in pairs(getconnections(LogService.MessageOut)) do
-	connection:Disable()
-end
-
-local textDisplay = Names[LocalPlayer.UserId] or LocalPlayer.DisplayName
-local scripter = textDisplay == "Owner" and "you" or "Katrist#3130"
-
-OrionLib:MakeNotification({
-	Name = "Universal ESP is loading...",
-	Content = "Welcome ".. textDisplay ..".\n\nScripted by ".. scripter ..".",
-	Image = "rbxassetid://4483345998",
-	Time = 5
-})
-
-local Window = OrionLib:MakeWindow({
-	Name = "Universal ESP", 
-	HidePremium = false, 
-	SaveConfig = true, 
-	ConfigFolder = "ESPConfiguration"
-})
-
-local ESP = Window:MakeTab({
-	Name = "ESP",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
---//Functions
-local function AddTeamTag(player: Player, Frame: Frame)
-	local Team = Instance.new("TextLabel")
-	Team.Name = "Team"
-	Team.BorderMode = Enum.BorderMode.Middle
-	Team.Size = UDim2.new(1, 0, 0.65, 0)
-	Team.BorderColor3 = Color3.fromRGB(255, 255, 255)
-	Team.BackgroundTransparency = 1
-	Team.BorderSizePixel = 0
-	Team.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
-	Team.FontSize = Enum.FontSize.Size18
-	Team.TextStrokeTransparency = 0
-	Team.TextTruncate = Enum.TextTruncate.AtEnd
-	Team.TextSize = 15
-	Team.RichText = true
-	Team.TextColor = player.Team.TeamColor
-	Team.Text = "(".. player.Team.Name ..")"
-	Team.TextWrapped = true
-	Team.Font = Enum.Font.SourceSansBold
-	Team.TextWrap = true
-	Team.Parent = Frame
-end
-
-local function AddNameTag(player: Player)
-	local Head = player.Character:WaitForChild("Head", 5)
-
-	if not Head then
-		return
-	end
-
-	local Username = Instance.new("BillboardGui")
-	Username.Name = "Username"
-	Username.Adornee = Head
-	Username.Active = true
-	Username.AlwaysOnTop = true
-	Username.Size = UDim2.new(0, 350, 0, 125)
-	Username.MaxDistance = math.huge
-	Username.StudsOffset = Vector3.new(0, 2, 0)
-
-	local Frame = Instance.new("Frame")
-	Frame.Size = UDim2.new(1, 0, 1.3, 0)
-	Frame.BackgroundTransparency = 1
-	Frame.BorderSizePixel = 0
-	Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	Frame.Parent = Username
-
-	local Username1 = Instance.new("TextLabel")
-	Username1.Name = "Username"
-	Username1.BorderMode = Enum.BorderMode.Middle
-	Username1.Size = UDim2.new(1, 0, 0.65, 0)
-	Username1.BorderColor3 = Color3.fromRGB(255, 255, 255)
-	Username1.BackgroundTransparency = 1
-	Username1.Position = player.Team and UDim2.new(0, 0, -0.08, 0) or UDim2.new(0, 0, 0, 0)
-	Username1.BorderSizePixel = 0
-	Username1.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
-	Username1.FontSize = Enum.FontSize.Size28
-	Username1.TextStrokeTransparency = 0
-	Username1.TextTruncate = Enum.TextTruncate.AtEnd
-	Username1.TextSize = 15
-	Username1.RichText = true
-	Username1.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Username1.Text = player.DisplayName
-	Username1.TextWrapped = true
-	Username1.Font = Enum.Font.SourceSansBold
-	Username1.TextWrap = true
-	Username1.TextScaled = false
-	Username1.Parent = Frame
+	--//Libraries
+	local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
 	
-	if player.Team then
-		AddTeamTag(player, Frame)
-	end
-	
-	Connections[player.Name.. "TeamChanged"] = player:GetPropertyChangedSignal("Team"):Connect(function()
-		if player.Team then
-			local teamTag = Frame:FindFirstChild("Team")
+	--//Variables
+	local LocalPlayer = Players.LocalPlayer
+	local mt = getrawmetatable(game)
 
-			if teamTag then
-				teamTag:Destroy()
-			end
-			
-			Username1.Position = UDim2.new(0, 0, -0.125, 0)
-			AddTeamTag(player, Frame)
-		else
-			Username1.Position = UDim2.new(0, 0, 0, 0)
-			Frame.Team:Destroy()
+	--//Controls
+	local old = mt.__namecall
+	local characterFolder = nil
+	local highlight = nil
+	local highlightYourself = false
+	local rainbowESP = false
+	local highlightColor = nil
+	local fillTransparency = 0.5
+
+	--//Tables
+	local Connections = {}
+	local NameTags = {}
+	local Names = {
+		[119112856] = "Owner",
+		[3271865660] = "dumbass"
+	}
+
+	--//Initialization
+	setreadonly(mt, false)
+
+	mt.__namecall = newcclosure(function(self, ...)
+		local method = getnamecallmethod()
+
+		if method == "Kick" then
+			return
 		end
+
+		return old(self, ...)
 	end)
 
-	NameTags[player] = Username
-	Username.Parent = gethui()
-end
+	setreadonly(mt, true)
 
-local function RemoveNameTag(player: Player)
-	local nameTag = NameTags[player]
-
-	if nameTag then
-		nameTag:Destroy()
-		NameTags[player] = nil
+	for i, connection in pairs(getconnections(LogService.MessageOut)) do
+		connection:Disable()
 	end
-	
-	local connection: RBXScriptConnection = Connections[player.Name.. "TeamChanged"]
-	
-	if connection then
-		connection:Disconnect()
+
+	local textDisplay = Names[LocalPlayer.UserId] or LocalPlayer.DisplayName
+	local scripter = textDisplay == "Owner" and "you" or "Katrist#3130"
+
+	OrionLib:MakeNotification({
+		Name = "Universal ESP is loading...",
+		Content = "Welcome ".. textDisplay ..".\n\nScripted by ".. scripter ..".",
+		Image = "rbxassetid://4483345998",
+		Time = 5
+	})
+
+	local Window = OrionLib:MakeWindow({
+		Name = "Universal ESP", 
+		HidePremium = false, 
+		SaveConfig = true, 
+		ConfigFolder = "ESPConfiguration"
+	})
+
+	local ESP = Window:MakeTab({
+		Name = "ESP",
+		Icon = "rbxassetid://4483345998",
+		PremiumOnly = false
+	})
+
+	--//Functions
+	local function AddTeamTag(player: Player, Frame: Frame)
+		local Team = Instance.new("TextLabel")
+		Team.Name = "Team"
+		Team.BorderMode = Enum.BorderMode.Middle
+		Team.Size = UDim2.new(1, 0, 0.65, 0)
+		Team.BorderColor3 = Color3.fromRGB(255, 255, 255)
+		Team.BackgroundTransparency = 1
+		Team.BorderSizePixel = 0
+		Team.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+		Team.FontSize = Enum.FontSize.Size18
+		Team.TextStrokeTransparency = 0
+		Team.TextTruncate = Enum.TextTruncate.AtEnd
+		Team.TextSize = 15
+		Team.RichText = true
+		Team.TextColor = player.Team.TeamColor
+		Team.Text = "(".. player.Team.Name ..")"
+		Team.TextWrapped = true
+		Team.Font = Enum.Font.SourceSansBold
+		Team.TextWrap = true
+		Team.Parent = Frame
 	end
-end
 
-ESP:AddToggle({
-	Name = "ESP",
-	Default = false,
-	Save = true,
-	Flag = "ESP",
-	Callback = function(Bool)
-		if Bool then
-			characterFolder = Instance.new("Model")
-			characterFolder.Name = HttpService:GenerateGUID(false)
+	local function AddNameTag(player: Player)
+		local Head = player.Character:WaitForChild("Head", 5)
 
-			highlight = Instance.new("Highlight")
-			highlight.Name = HttpService:GenerateGUID(false)
-			highlight.Adornee = characterFolder
-			highlight.FillColor = highlightColor
-			highlight.OutlineColor = highlightColor
-			highlight.FillTransparency = fillTransparency
-			highlight.Parent = gethui()
+		if not Head then
+			return
+		end
 
-			characterFolder.Parent = workspace
+		local Username = Instance.new("BillboardGui")
+		Username.Name = "Username"
+		Username.Adornee = Head
+		Username.Active = true
+		Username.AlwaysOnTop = true
+		Username.Size = UDim2.new(0, 350, 0, 125)
+		Username.MaxDistance = math.huge
+		Username.StudsOffset = Vector3.new(0, 2, 0)
 
-			for i, player: Player in ipairs(Players:GetPlayers()) do
-				if player == LocalPlayer and not highlightYourself then
-					continue
+		local Frame = Instance.new("Frame")
+		Frame.Size = UDim2.new(1, 0, 1.3, 0)
+		Frame.BackgroundTransparency = 1
+		Frame.BorderSizePixel = 0
+		Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Frame.Parent = Username
+
+		local Username1 = Instance.new("TextLabel")
+		Username1.Name = "Username"
+		Username1.BorderMode = Enum.BorderMode.Middle
+		Username1.Size = UDim2.new(1, 0, 0.65, 0)
+		Username1.BorderColor3 = Color3.fromRGB(255, 255, 255)
+		Username1.BackgroundTransparency = 1
+		Username1.Position = player.Team and UDim2.new(0, 0, -0.08, 0) or UDim2.new(0, 0, 0, 0)
+		Username1.BorderSizePixel = 0
+		Username1.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+		Username1.FontSize = Enum.FontSize.Size28
+		Username1.TextStrokeTransparency = 0
+		Username1.TextTruncate = Enum.TextTruncate.AtEnd
+		Username1.TextSize = 15
+		Username1.RichText = true
+		Username1.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Username1.Text = player.DisplayName
+		Username1.TextWrapped = true
+		Username1.Font = Enum.Font.SourceSansBold
+		Username1.TextWrap = true
+		Username1.TextScaled = false
+		Username1.Parent = Frame
+		
+		if player.Team then
+			AddTeamTag(player, Frame)
+		end
+		
+		Connections[player.Name.. "TeamChanged"] = player:GetPropertyChangedSignal("Team"):Connect(function()
+			if player.Team then
+				local teamTag = Frame:FindFirstChild("Team")
+
+				if teamTag then
+					teamTag:Destroy()
+				end
+				
+				Username1.Position = UDim2.new(0, 0, -0.125, 0)
+				AddTeamTag(player, Frame)
+			else
+				Username1.Position = UDim2.new(0, 0, 0, 0)
+				Frame.Team:Destroy()
+			end
+		end)
+
+		NameTags[player] = Username
+		Username.Parent = gethui()
+	end
+
+	local function RemoveNameTag(player: Player)
+		local nameTag = NameTags[player]
+
+		if nameTag then
+			nameTag:Destroy()
+			NameTags[player] = nil
+		end
+		
+		local connection: RBXScriptConnection = Connections[player.Name.. "TeamChanged"]
+		
+		if connection then
+			connection:Disconnect()
+		end
+	end
+
+	ESP:AddToggle({
+		Name = "ESP",
+		Default = false,
+		Save = true,
+		Flag = "ESP",
+		Callback = function(Bool)
+			if Bool then
+				characterFolder = Instance.new("Model")
+				characterFolder.Name = HttpService:GenerateGUID(false)
+
+				highlight = Instance.new("Highlight")
+				highlight.Name = HttpService:GenerateGUID(false)
+				highlight.Adornee = characterFolder
+				highlight.FillColor = highlightColor
+				highlight.OutlineColor = highlightColor
+				highlight.FillTransparency = fillTransparency
+				highlight.Parent = gethui()
+
+				characterFolder.Parent = workspace
+
+				for i, player: Player in ipairs(Players:GetPlayers()) do
+					if player == LocalPlayer and not highlightYourself then
+						continue
+					end
+
+					if player.Character then
+						player.Character.Parent = characterFolder
+
+						if player ~= LocalPlayer then
+							RemoveNameTag(player)
+							AddNameTag(player)
+						end
+					end
+
+					Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
+						character.Parent = characterFolder
+
+						if player ~= LocalPlayer then
+							RemoveNameTag(player)
+							AddNameTag(player)
+						end
+					end)
+
+					Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
+						RemoveNameTag(player)
+					end)
 				end
 
-				if player.Character then
-					player.Character.Parent = characterFolder
+				Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
+					Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
+						character.Parent = characterFolder
 
-					if player ~= LocalPlayer then
 						RemoveNameTag(player)
 						AddNameTag(player)
-					end
-				end
+					end)
 
-				Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
-					character.Parent = characterFolder
-
-					if player ~= LocalPlayer then
+					Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
 						RemoveNameTag(player)
-						AddNameTag(player)
+					end)
+				end)
+
+				Connections["PlayerRemoving"] = Players.PlayerRemoving:Connect(function(player)
+					RemoveNameTag(player)
+
+					for i, connection in pairs(Connections) do
+						if typeof(i) == "string" and i:match(player.Name) then
+							connection:Disconnect()
+						end
 					end
 				end)
+			else
+				for i, connection: RBXScriptConnection in ipairs(Connections) do
+					connection:Disconnect()
+				end
 
-				Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
-					RemoveNameTag(player)
-				end)
+				if characterFolder then
+					for i, character in ipairs(characterFolder:GetChildren()) do	
+						character.Parent = workspace
+					end
+
+					for i, nametag in pairs(NameTags) do
+						nametag:Destroy()
+						NameTags[i] = nil
+					end
+
+					if highlight then
+						highlight:Destroy()
+						highlight = nil
+					end
+
+					characterFolder:Destroy()
+					characterFolder = nil
+				end
 			end
+		end    
+	})
 
-			Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
-				Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
-					character.Parent = characterFolder
+	ESP:AddToggle({
+		Name = "Highlight Yourself",
+		Default = false,
+		Save = true,
+		Flag = "HighlightYourself",
+		Callback = function(Bool)
+			highlightYourself = Bool
 
-					RemoveNameTag(player)
-					AddNameTag(player)
-				end)
+			if highlightYourself then
+				if characterFolder then
+					if LocalPlayer.Character then			
+						LocalPlayer.Character.Parent = characterFolder
+					end
 
-				Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
-					RemoveNameTag(player)
-				end)
-			end)
+					Connections[LocalPlayer] = LocalPlayer.CharacterAdded:Connect(function(character)
+						character.Parent = characterFolder
+					end)
+				end
+			else
+				local connection = Connections[LocalPlayer]
 
-			Connections["PlayerRemoving"] = Players.PlayerRemoving:Connect(function(player)
-				RemoveNameTag(player)
+				if connection then
+					connection:Disconnect()
+				end
 
-				for i, connection in pairs(Connections) do
-					if typeof(i) == "string" and i:match(player.Name) then
-						connection:Disconnect()
+				if LocalPlayer.Character then
+					LocalPlayer.Character.Parent = workspace
+				end
+			end
+		end    
+	})
+
+	ESP:AddToggle({
+		Name = "Rainbow ESP",
+		Default = false,
+		Save = true,
+		Flag = "RainbowESP",
+		Callback = function(Bool)
+			rainbowESP = Bool
+
+			if rainbowESP then
+				local ESPColor = OrionLib.Flags["ESPColor"]
+				local hue, saturation, value = highlightColor:ToHSV()
+
+				while rainbowESP do
+					ESPColor:Set(Color3.fromHSV(hue, 1, 1))
+					hue += 1/100
+
+					task.wait(0.05)
+
+					if hue >= 1 then
+						hue = 0
 					end
 				end
-			end)
-		else
-			for i, connection: RBXScriptConnection in ipairs(Connections) do
-				connection:Disconnect()
 			end
+		end    
+	})
 
-			if characterFolder then
-				for i, character in ipairs(characterFolder:GetChildren()) do	
-					character.Parent = workspace
-				end
+	ESP:AddColorpicker({
+		Name = "ESP Color",
+		Default = Color3.fromRGB(255, 255, 255),
+		Save = true,
+		Flag = "ESPColor",
+		Callback = function(color)
+			highlightColor = color
 
-				for i, nametag in pairs(NameTags) do
-					nametag:Destroy()
-					NameTags[i] = nil
-				end
-
-				if highlight then
-					highlight:Destroy()
-					highlight = nil
-				end
-
-				characterFolder:Destroy()
-				characterFolder = nil
+			if characterFolder and highlight then
+				highlight.FillColor = highlightColor
+				highlight.OutlineColor = highlightColor
 			end
 		end
-	end    
-})
+	})
 
-ESP:AddToggle({
-	Name = "Highlight Yourself",
-	Default = false,
-	Save = true,
-	Flag = "HighlightYourself",
-	Callback = function(Bool)
-		highlightYourself = Bool
+	ESP:AddSlider({
+		Name = "Fill Transparency",
+		Min = 0,
+		Max = 100,
+		Default = 50,
+		Save = true,
+		Flag = "FillTransparency",
+		Color = Color3.fromRGB(141, 141, 141),
+		Increment = 10,
+		ValueName = "%",
+		Callback = function(number)
+			fillTransparency = number / 100
 
-		if highlightYourself then
-			if characterFolder then
-				if LocalPlayer.Character then			
-					LocalPlayer.Character.Parent = characterFolder
-				end
-
-				Connections[LocalPlayer] = LocalPlayer.CharacterAdded:Connect(function(character)
-					character.Parent = characterFolder
-				end)
+			if characterFolder and highlight then
+				highlight.FillTransparency = fillTransparency
 			end
-		else
-			local connection = Connections[LocalPlayer]
-
-			if connection then
-				connection:Disconnect()
-			end
-
-			if LocalPlayer.Character then
-				LocalPlayer.Character.Parent = workspace
-			end
-		end
-	end    
-})
-
-ESP:AddToggle({
-	Name = "Rainbow ESP",
-	Default = false,
-	Save = true,
-	Flag = "RainbowESP",
-	Callback = function(Bool)
-		rainbowESP = Bool
-
-		if rainbowESP then
-			local ESPColor = OrionLib.Flags["ESPColor"]
-			local hue, saturation, value = highlightColor:ToHSV()
-
-			while rainbowESP do
-				ESPColor:Set(Color3.fromHSV(hue, 1, 1))
-				hue += 1/100
-
-				task.wait(0.05)
-
-				if hue >= 1 then
-					hue = 0
-				end
-			end
-		end
-	end    
-})
-
-ESP:AddColorpicker({
-	Name = "ESP Color",
-	Default = Color3.fromRGB(255, 255, 255),
-	Save = true,
-	Flag = "ESPColor",
-	Callback = function(color)
-		highlightColor = color
-
-		if characterFolder and highlight then
-			highlight.FillColor = highlightColor
-			highlight.OutlineColor = highlightColor
-		end
-	end
-})
-
-ESP:AddSlider({
-	Name = "Fill Transparency",
-	Min = 0,
-	Max = 100,
-	Default = 50,
-	Save = true,
-	Flag = "FillTransparency",
-	Color = Color3.fromRGB(141, 141, 141),
-	Increment = 10,
-	ValueName = "%",
-	Callback = function(number)
-		fillTransparency = number / 100
-
-		if characterFolder and highlight then
-			highlight.FillTransparency = fillTransparency
-		end
-	end    
-})
+		end    
+	})
 
 
-local Credits = Window:MakeTab({
-	Name = "Credits",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
+	local Credits = Window:MakeTab({
+		Name = "Credits",
+		Icon = "rbxassetid://4483345998",
+		PremiumOnly = false
+	})
 
-Credits:AddParagraph("Katrist#3130",
-	"Scripted the ESP"
-)
+	Credits:AddParagraph("Katrist#3130",
+		"Scripted the ESP"
+	)
 
-Credits:AddParagraph("shlex#0001",
-	"Designed and scripted Orion"
-)
+	Credits:AddParagraph("shlex#0001",
+		"Designed and scripted Orion"
+	)
 
-OrionLib:Init()
+	OrionLib:Init()
+end)
