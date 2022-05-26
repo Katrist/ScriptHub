@@ -241,7 +241,7 @@ ESP:AddToggle({
 				RemoveNameTag(player)
 
 				for i, connection in pairs(Connections) do
-					if i:match(player.Name) then
+					if typeof(i) == "string" and i:match(player.Name) then
 						connection:Disconnect()
 					end
 				end
