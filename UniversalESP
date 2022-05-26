@@ -70,6 +70,28 @@ local ESP = Window:MakeTab({
 })
 
 --//Functions
+local function AddTeamTag(player: Player, Frame: Frame)
+	local Team = Instance.new("TextLabel")
+	Team.Name = "Team"
+	Team.BorderMode = Enum.BorderMode.Middle
+	Team.Size = UDim2.new(1, 0, 0.65, 0)
+	Team.BorderColor3 = Color3.fromRGB(255, 255, 255)
+	Team.BackgroundTransparency = 1
+	Team.BorderSizePixel = 0
+	Team.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+	Team.FontSize = Enum.FontSize.Size18
+	Team.TextStrokeTransparency = 0
+	Team.TextTruncate = Enum.TextTruncate.AtEnd
+	Team.TextSize = 15
+	Team.RichText = true
+	Team.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Team.Text = "(".. player.Team.Name ..")"
+	Team.TextWrapped = true
+	Team.Font = Enum.Font.SourceSansBold
+	Team.TextWrap = true
+	Team.Parent = Frame
+end
+
 local function AddNameTag(player: Player)
 	local Head = player.Character:WaitForChild("Head", 1)
 
@@ -99,6 +121,7 @@ local function AddNameTag(player: Player)
 	Username1.Size = UDim2.new(1, 0, 0.65, 0)
 	Username1.BorderColor3 = Color3.fromRGB(255, 255, 255)
 	Username1.BackgroundTransparency = 1
+	Username1.Position = player.Team and UDim2.new(0, 0, -0.08, 0) or UDim2.new(0, 0, 0, 0)
 	Username1.BorderSizePixel = 0
 	Username1.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
 	Username1.FontSize = Enum.FontSize.Size28
@@ -113,6 +136,26 @@ local function AddNameTag(player: Player)
 	Username1.TextWrap = true
 	Username1.TextScaled = false
 	Username1.Parent = Frame
+	
+	if player.Team then
+		AddTeamTag(player, Frame)
+	end
+	
+	Connections[player.Name.. "TeamChanged"] = player:GetPropertyChangedSignal("Team"):Connect(function()
+		if player.Team then
+			local teamTag = Frame:FindFirstChild("Team")
+
+			if teamTag then
+				teamTag:Destroy()
+			end
+			
+			Username1.Position = UDim2.new(0, 0, -0.125, 0)
+			AddTeamTag(player, Frame)
+		else
+			Username1.Position = UDim2.new(0, 0, 0, 0)
+			Frame.Team:Destroy()
+		end
+	end)
 
 	NameTags[player] = Username
 	Username.Parent = gethui()
@@ -124,6 +167,12 @@ local function RemoveNameTag(player: Player)
 	if nameTag then
 		nameTag:Destroy()
 		NameTags[player] = nil
+	end
+	
+	local connection: RBXScriptConnection = Connections[player.Name.. "TeamChanged"]
+	
+	if connection then
+		connection:Disconnect()
 	end
 end
 
@@ -324,7 +373,7 @@ local Credits = Window:MakeTab({
 })
 
 Credits:AddParagraph("Katrist#3130",
-	"Scripter of the ESP"
+	"Scripted the ESP"
 )
 
 Credits:AddParagraph("shlex#0001",
