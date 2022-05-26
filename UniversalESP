@@ -44,10 +44,6 @@ pcall(function()
 
 	setreadonly(mt, true)
 
-	for i, connection in pairs(getconnections(LogService.MessageOut)) do
-		connection:Disable()
-	end
-
 	local textDisplay = Names[LocalPlayer.UserId] or LocalPlayer.DisplayName
 	local scripter = textDisplay == "Owner" and "you" or "Katrist#3130"
 
