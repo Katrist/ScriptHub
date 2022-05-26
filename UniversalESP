@@ -1,13 +1,30 @@
 --//Prevents errors
 pcall(function()
+	--//Micro optimizations
+	local loadString = loadstring
+	local Color3FromRGBNew = Color3.fromRGB
+	local Color3FromHSVNew = Color3.fromHSV
+	local UDim2New = UDim2.new
+	local Vector3New = Vector3.new
+	local huge = math.huge
+
+	--[[
+	This works because it references the global variable and 
+	makes it a local variable which is faster to access
+	for the script.
+	
+	(tldr: using local variables = higher speeds)
+	--]]
+	
 	--//Services
 	local Players = game:GetService("Players")
 	local HttpService = game:GetService("HttpService")
 	local LogService = game:GetService("LogService")
+	local Workspace = game:GetService("Workspace")
 
 	--//Libraries
-	local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
-	
+	local OrionLib = loadString(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
+
 	--//Variables
 	local LocalPlayer = Players.LocalPlayer
 	local mt = getrawmetatable(game)
@@ -72,11 +89,11 @@ pcall(function()
 		local Team = Instance.new("TextLabel")
 		Team.Name = "Team"
 		Team.BorderMode = Enum.BorderMode.Middle
-		Team.Size = UDim2.new(1, 0, 0.65, 0)
-		Team.BorderColor3 = Color3.fromRGB(255, 255, 255)
+		Team.Size = UDim2New(1, 0, 0.65, 0)
+		Team.BorderColor3 = Color3FromRGBNew(255, 255, 255)
 		Team.BackgroundTransparency = 1
 		Team.BorderSizePixel = 0
-		Team.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+		Team.BackgroundColor3 = Color3FromRGBNew(52, 52, 52)
 		Team.FontSize = Enum.FontSize.Size18
 		Team.TextStrokeTransparency = 0
 		Team.TextTruncate = Enum.TextTruncate.AtEnd
@@ -102,43 +119,43 @@ pcall(function()
 		Username.Adornee = Head
 		Username.Active = true
 		Username.AlwaysOnTop = true
-		Username.Size = UDim2.new(0, 350, 0, 125)
-		Username.MaxDistance = math.huge
-		Username.StudsOffset = Vector3.new(0, 2, 0)
+		Username.Size = UDim2New(0, 350, 0, 125)
+		Username.MaxDistance = huge
+		Username.StudsOffset = Vector3New(0, 2, 0)
 
 		local Frame = Instance.new("Frame")
-		Frame.Size = UDim2.new(1, 0, 1.3, 0)
+		Frame.Size = UDim2New(1, 0, 1.3, 0)
 		Frame.BackgroundTransparency = 1
 		Frame.BorderSizePixel = 0
-		Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Frame.BackgroundColor3 = Color3FromRGBNew(0, 0, 0)
 		Frame.Parent = Username
 
 		local Username1 = Instance.new("TextLabel")
 		Username1.Name = "Username"
 		Username1.BorderMode = Enum.BorderMode.Middle
-		Username1.Size = UDim2.new(1, 0, 0.65, 0)
-		Username1.BorderColor3 = Color3.fromRGB(255, 255, 255)
+		Username1.Size = UDim2New(1, 0, 0.65, 0)
+		Username1.BorderColor3 = Color3FromRGBNew(255, 255, 255)
 		Username1.BackgroundTransparency = 1
-		Username1.Position = player.Team and UDim2.new(0, 0, -0.08, 0) or UDim2.new(0, 0, 0, 0)
+		Username1.Position = player.Team and UDim2New(0, 0, -0.08, 0) or UDim2New(0, 0, 0, 0)
 		Username1.BorderSizePixel = 0
-		Username1.BackgroundColor3 = Color3.fromRGB(52, 52, 52)
+		Username1.BackgroundColor3 = Color3FromRGBNew(52, 52, 52)
 		Username1.FontSize = Enum.FontSize.Size28
 		Username1.TextStrokeTransparency = 0
 		Username1.TextTruncate = Enum.TextTruncate.AtEnd
 		Username1.TextSize = 15
 		Username1.RichText = true
-		Username1.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Username1.TextColor3 = Color3FromRGBNew(255, 255, 255)
 		Username1.Text = player.DisplayName
 		Username1.TextWrapped = true
 		Username1.Font = Enum.Font.SourceSansBold
 		Username1.TextWrap = true
 		Username1.TextScaled = false
 		Username1.Parent = Frame
-		
+
 		if player.Team then
 			AddTeamTag(player, Frame)
 		end
-		
+
 		Connections[player.Name.. "TeamChanged"] = player:GetPropertyChangedSignal("Team"):Connect(function()
 			if player.Team then
 				local teamTag = Frame:FindFirstChild("Team")
@@ -146,11 +163,11 @@ pcall(function()
 				if teamTag then
 					teamTag:Destroy()
 				end
-				
-				Username1.Position = UDim2.new(0, 0, -0.125, 0)
+
+				Username1.Position = UDim2New(0, 0, -0.125, 0)
 				AddTeamTag(player, Frame)
 			else
-				Username1.Position = UDim2.new(0, 0, 0, 0)
+				Username1.Position = UDim2New(0, 0, 0, 0)
 				Frame.Team:Destroy()
 			end
 		end)
@@ -166,9 +183,9 @@ pcall(function()
 			nameTag:Destroy()
 			NameTags[player] = nil
 		end
-		
+
 		local connection: RBXScriptConnection = Connections[player.Name.. "TeamChanged"]
-		
+
 		if connection then
 			connection:Disconnect()
 		end
@@ -192,7 +209,7 @@ pcall(function()
 				highlight.FillTransparency = fillTransparency
 				highlight.Parent = gethui()
 
-				characterFolder.Parent = workspace
+				characterFolder.Parent = Workspace
 
 				for i, player: Player in ipairs(Players:GetPlayers()) do
 					if player == LocalPlayer and not highlightYourself then
@@ -251,7 +268,7 @@ pcall(function()
 
 				if characterFolder then
 					for i, character in ipairs(characterFolder:GetChildren()) do	
-						character.Parent = workspace
+						character.Parent = Workspace
 					end
 
 					for i, nametag in pairs(NameTags) do
@@ -297,7 +314,7 @@ pcall(function()
 				end
 
 				if LocalPlayer.Character then
-					LocalPlayer.Character.Parent = workspace
+					LocalPlayer.Character.Parent = Workspace
 				end
 			end
 		end    
@@ -316,7 +333,7 @@ pcall(function()
 				local hue, saturation, value = highlightColor:ToHSV()
 
 				while rainbowESP do
-					ESPColor:Set(Color3.fromHSV(hue, 1, 1))
+					ESPColor:Set(Color3FromHSVNew(hue, 1, 1))
 					hue += 1/100
 
 					task.wait(0.05)
@@ -331,7 +348,7 @@ pcall(function()
 
 	ESP:AddColorpicker({
 		Name = "ESP Color",
-		Default = Color3.fromRGB(255, 255, 255),
+		Default = Color3FromRGBNew(255, 255, 255),
 		Save = true,
 		Flag = "ESPColor",
 		Callback = function(color)
@@ -351,7 +368,7 @@ pcall(function()
 		Default = 50,
 		Save = true,
 		Flag = "FillTransparency",
-		Color = Color3.fromRGB(141, 141, 141),
+		Color = Color3FromRGBNew(141, 141, 141),
 		Increment = 10,
 		ValueName = "%",
 		Callback = function(number)
