@@ -93,7 +93,7 @@ local function AddTeamTag(player: Player, Frame: Frame)
 end
 
 local function AddNameTag(player: Player)
-	local Head = player.Character:WaitForChild("Head", 1)
+	local Head = player.Character:WaitForChild("Head", 5)
 
 	if not Head then
 		return
