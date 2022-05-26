@@ -84,7 +84,7 @@ local function AddTeamTag(player: Player, Frame: Frame)
 	Team.TextTruncate = Enum.TextTruncate.AtEnd
 	Team.TextSize = 15
 	Team.RichText = true
-	Team.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Team.TextColor = player.Team.TeamColor
 	Team.Text = "(".. player.Team.Name ..")"
 	Team.TextWrapped = true
 	Team.Font = Enum.Font.SourceSansBold
