@@ -1,35 +1,37 @@
 --//Prevents errors
 pcall(function()
+	
 	--//Micro optimizations
-	local loadString = loadstring
+	local LoadString = loadstring
 	local Color3FromRGBNew = Color3.fromRGB
 	local Color3FromHSVNew = Color3.fromHSV
 	local UDim2New = UDim2.new
 	local Vector3New = Vector3.new
-	local huge = math.huge
+	local Huge = math.huge
 	local InstanceNew = Instance.new
-	local dataModel = game
+	local DataModel = game
 
 	--[[
 	This works because it references the global variable and 
 	makes it a local variable which is faster to access
 	for the script.
 	
-	(tldr: using local variables = higher speeds)
+	(tldr: using local variables = higher script speeds)
 	--]]
 	
 	--//Services
-	local Players = dataModel:GetService("Players")
-	local HttpService = dataModel:GetService("HttpService")
-	local LogService = dataModel:GetService("LogService")
-	local workSpace = dataModel:GetService("Workspace")
+	local Players = DataModel:GetService("Players")
+	local HttpService = DataModel:GetService("HttpService")
+	local LogService = DataModel:GetService("LogService")
+	local workSpace = DataModel:GetService("Workspace")
 
 	--//Libraries
-	local OrionLib = loadString(dataModel:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
+	local OrionLib = LoadString(DataModel:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
 
 	--//Variables
 	local LocalPlayer = Players.LocalPlayer
-	local mt = getrawmetatable(dataModel)
+	local hui = gethui()
+	local mt = getrawmetatable(DataModel)
 
 	--//Controls
 	local old = mt.__namecall
@@ -116,7 +118,7 @@ pcall(function()
 		Username.Active = true
 		Username.AlwaysOnTop = true
 		Username.Size = UDim2New(0, 350, 0, 125)
-		Username.MaxDistance = huge
+		Username.MaxDistance = Huge
 		Username.StudsOffset = Vector3New(0, 2, 0)
 
 		local Frame = InstanceNew("Frame")
@@ -167,7 +169,7 @@ pcall(function()
 		end)
 
 		NameTags[player] = Username
-		Username.Parent = gethui()
+		Username.Parent = hui
 	end
 	
 	local function RemoveNameTag(player: Player)
@@ -201,7 +203,7 @@ pcall(function()
 				highlight.FillColor = highlightColor
 				highlight.OutlineColor = highlightColor
 				highlight.FillTransparency = fillTransparency
-				highlight.Parent = gethui()
+				highlight.Parent = hui
 
 				characterFolder.Parent = workSpace
 
@@ -215,10 +217,8 @@ pcall(function()
 
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
-							
-							local Head = player.Character:FindFirstChild("Head")
-							
-							if Head then
+														
+							if player.Character:FindFirstChild("Head") then
 								AddNameTag(player)
 							end
 						end
@@ -230,7 +230,7 @@ pcall(function()
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
 							
-							local Head = character:WaitForChild("Head")
+							character:WaitForChild("Head")
 							AddNameTag(player)
 						end
 					end)
@@ -246,7 +246,7 @@ pcall(function()
 
 						RemoveNameTag(player)
 						
-						local Head = character:WaitForChild("Head")
+						character:WaitForChild("Head")
 						AddNameTag(player)
 					end)
 
@@ -337,9 +337,9 @@ pcall(function()
 
 				while rainbowESP do
 					ESPColor:Set(Color3FromHSVNew(hue, 1, 1))
-					hue += 1/100
+					hue += 1/1000
 
-					task.wait(0.05)
+					task.wait(0.01)
 
 					if hue >= 1 then
 						hue = 0
@@ -389,8 +389,8 @@ pcall(function()
 		Icon = "rbxassetid://4483345998",
 		PremiumOnly = false
 	})
-
-	Credits:AddParagraph("Katrist#3130",
+	
+	Credits:AddParagraph(textDisplay == "Owner" and "You" or "Katrist#3130",
 		"Scripted the ESP"
 	)
 
