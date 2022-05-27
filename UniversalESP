@@ -20,6 +20,7 @@ pcall(function()
 	--]]
 
 	--//Services
+	local CoreGui = DataModel:GetService("CoreGui")
 	local Players = DataModel:GetService("Players")
 	local HttpService = DataModel:GetService("HttpService")
 	local LogService = DataModel:GetService("LogService")
@@ -29,6 +30,7 @@ pcall(function()
 	local OrionLib = LoadString(DataModel:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
 
 	--//Variables
+	local Orion: ScreenGui = CoreGui:WaitForChild("Orion")
 	local LocalPlayer = Players.LocalPlayer
 	local hui = gethui()
 	local mt = getrawmetatable(DataModel)
@@ -87,7 +89,19 @@ pcall(function()
 		Icon = "rbxassetid://4483345998",
 		PremiumOnly = false
 	})
-
+	
+	local Binds = Window:MakeTab({
+		Name = "Binds",
+		Icon = "rbxassetid://4483345998",
+		PremiumOnly = false
+	})
+	
+	local Credits = Window:MakeTab({
+		Name = "Credits",
+		Icon = "rbxassetid://4483345998",
+		PremiumOnly = false
+	})
+	
 	--//Functions
 	local function AddTeamTag(player: Player, Frame: Frame)
 		local Team = InstanceNew("TextLabel")
@@ -408,12 +422,50 @@ pcall(function()
 			end
 		end    
 	})
+	
+	Binds:AddBind({
+		Name = "Kill Switch",
+		Default = Enum.KeyCode.F1,
+		Save = true,
+		Flag = "KillSwitch",
+		Hold = false,
+		Callback = function()
+			for i, connection: RBXScriptConnection in ipairs(Connections) do
+				connection:Disconnect()
+			end
 
+			if characterFolder then
+				for i, character in ipairs(characterFolder:GetChildren()) do	
+					character.Parent = workSpace
+				end
 
-	local Credits = Window:MakeTab({
-		Name = "Credits",
-		Icon = "rbxassetid://4483345998",
-		PremiumOnly = false
+				for i, nametag in pairs(NameTags) do
+					nametag:Destroy()
+					NameTags[i] = nil
+				end
+
+				if highlight then
+					highlight:Destroy()
+					highlight = nil
+				end
+
+				characterFolder:Destroy()
+				characterFolder = nil
+			end
+			
+			Orion:Destroy()
+		end
+	})
+	
+	Binds:AddBind({
+		Name = "Hide UI",
+		Default = Enum.KeyCode.F2,
+		Save = true,
+		Flag = "HideUI",
+		Hold = false,
+		Callback = function()
+			Orion.Enabled = not OrionLib.Enabled
+		end    
 	})
 
 	Credits:AddParagraph(textDisplay == "Owner" and "You" or "Katrist#3130",
