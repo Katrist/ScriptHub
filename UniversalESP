@@ -1,6 +1,6 @@
 --//Prevents errors
 pcall(function()
-	
+
 	--//Micro optimizations
 	local LoadString = loadstring
 	local Color3FromRGBNew = Color3.fromRGB
@@ -10,15 +10,15 @@ pcall(function()
 	local Huge = math.huge
 	local InstanceNew = Instance.new
 	local DataModel = game
-
+	
 	--[[
-	This works because it references the global variable and 
-	makes it a local variable which is faster to access
-	for the script.
+	This works because it references the global variable 
+	and makes it a local variable which is faster to 
+	access for the script.
 	
 	(tldr: using local variables = higher script speeds)
 	--]]
-	
+
 	--//Services
 	local Players = DataModel:GetService("Players")
 	local HttpService = DataModel:GetService("HttpService")
@@ -102,11 +102,15 @@ pcall(function()
 		Team.TextTruncate = Enum.TextTruncate.AtEnd
 		Team.TextSize = 15
 		Team.RichText = true
-		Team.TextColor = player.Team.TeamColor
+		Team.TextColor = player.TeamColor
 		Team.Text = "(".. player.Team.Name ..")"
 		Team.TextWrapped = false
 		Team.Font = Enum.Font.SourceSansBold
 		Team.Parent = Frame
+		
+		Connections[player.Name.. "Team"] = player.Team:GetPropertyChangedSignal("Name"):Connect(function()
+			Team.Text = "(".. player.Team.Name ..")"
+		end)
 	end
 
 	local function AddNameTag(player: Player)
@@ -153,11 +157,23 @@ pcall(function()
 		end
 
 		Connections[player.Name.. "TeamChanged"] = player:GetPropertyChangedSignal("Team"):Connect(function()
+			local connection = Connections[player.Name.. "Team"]
+			
+			if connection then
+				connection:Disconnect()
+			end
+			
 			if player.Team then
 				local teamTag = Frame:FindFirstChild("Team")
 
-				if teamTag then
-					teamTag:Destroy()
+				if teamTag then			
+					teamTag.Text = "(".. player.Team.Name ..")"
+					
+					Connections[player.Name.. "Team"] = player.Team:GetPropertyChangedSignal("Name"):Connect(function()
+						teamTag.Text = "(".. player.Team.Name ..")"
+					end)
+					
+					return
 				end
 
 				Username1.Position = UDim2New(0, 0, -0.125, 0)
@@ -167,11 +183,21 @@ pcall(function()
 				Frame.Team:Destroy()
 			end
 		end)
+		
+		Connections[player.Name.. "TeamColorChanged"] = player:GetPropertyChangedSignal("TeamColor"):Connect(function()
+			if player.TeamColor then
+				local teamTag = Frame:FindFirstChild("Team")
+
+				if teamTag then			
+					teamTag.TextColor = player.TeamColor
+				end
+			end
+		end)
 
 		NameTags[player] = Username
 		Username.Parent = hui
 	end
-	
+
 	local function RemoveNameTag(player: Player)
 		local nameTag = NameTags[player]
 
@@ -217,7 +243,7 @@ pcall(function()
 
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
-														
+
 							if player.Character:FindFirstChild("Head") then
 								AddNameTag(player)
 							end
@@ -229,7 +255,7 @@ pcall(function()
 
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
-							
+
 							character:WaitForChild("Head")
 							AddNameTag(player)
 						end
@@ -245,7 +271,7 @@ pcall(function()
 						character.Parent = characterFolder
 
 						RemoveNameTag(player)
-						
+
 						character:WaitForChild("Head")
 						AddNameTag(player)
 					end)
@@ -389,7 +415,7 @@ pcall(function()
 		Icon = "rbxassetid://4483345998",
 		PremiumOnly = false
 	})
-	
+
 	Credits:AddParagraph(textDisplay == "Owner" and "You" or "Katrist#3130",
 		"Scripted the ESP"
 	)
