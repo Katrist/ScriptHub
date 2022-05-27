@@ -30,7 +30,7 @@ pcall(function()
 	local OrionLib = LoadString(DataModel:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"), true)()
 
 	--//Variables
-	local Orion: ScreenGui = CoreGui:WaitForChild("Orion")
+	local Orion: ScreenGui = CoreGui.Orion
 	local LocalPlayer = Players.LocalPlayer
 	local hui = gethui()
 	local mt = getrawmetatable(DataModel)
