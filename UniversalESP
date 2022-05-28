@@ -10,12 +10,12 @@ pcall(function()
 	local Huge = math.huge
 	local InstanceNew = Instance.new
 	local DataModel = game
-	
+
 	--[[
 	This works because it references the global variable 
 	and makes it a local variable which is faster to 
 	access for the script.
-	
+
 	(tldr: using local variables = higher script speeds)
 	--]]
 
@@ -89,19 +89,19 @@ pcall(function()
 		Icon = "rbxassetid://4483345998",
 		PremiumOnly = false
 	})
-	
+
 	local Binds = Window:MakeTab({
 		Name = "Binds",
 		Icon = "rbxassetid://4483345998",
 		PremiumOnly = false
 	})
-	
+
 	local Credits = Window:MakeTab({
 		Name = "Credits",
 		Icon = "rbxassetid://4483345998",
 		PremiumOnly = false
 	})
-	
+
 	--//Functions
 	local function AddTeamTag(player: Player, Frame: Frame)
 		local Team = InstanceNew("TextLabel")
@@ -121,23 +121,27 @@ pcall(function()
 		Team.TextWrapped = false
 		Team.Font = Enum.Font.SourceSansBold
 		Team.Parent = Frame
-		
+
 		Connections[player.Name.. "Team"] = player.Team:GetPropertyChangedSignal("Name"):Connect(function()
 			Team.Text = "(".. player.Team.Name ..")"
 		end)
 	end
 
 	local function AddNameTag(player: Player)
-		local Head = player.Character.Head
+		local HumanoidRootPart = player.Character:WaitForChild("HumanoidRootPart", 5)
+		
+		if not HumanoidRootPart then
+			return
+		end
 
 		local Username = InstanceNew("BillboardGui")
 		Username.Name = "Username"
-		Username.Adornee = Head
+		Username.Adornee = HumanoidRootPart
 		Username.Active = true
 		Username.AlwaysOnTop = true
 		Username.Size = UDim2New(0, 350, 0, 125)
 		Username.MaxDistance = Huge
-		Username.StudsOffset = Vector3New(0, 2, 0)
+		Username.StudsOffset = Vector3New(0, 3, 0)
 
 		local Frame = InstanceNew("Frame")
 		Frame.Size = UDim2New(1, 0, 1.3, 0)
@@ -172,21 +176,21 @@ pcall(function()
 
 		Connections[player.Name.. "TeamChanged"] = player:GetPropertyChangedSignal("Team"):Connect(function()
 			local connection = Connections[player.Name.. "Team"]
-			
+
 			if connection then
 				connection:Disconnect()
 			end
-			
+
 			if player.Team then
 				local teamTag = Frame:FindFirstChild("Team")
 
 				if teamTag then			
 					teamTag.Text = "(".. player.Team.Name ..")"
-					
+
 					Connections[player.Name.. "Team"] = player.Team:GetPropertyChangedSignal("Name"):Connect(function()
 						teamTag.Text = "(".. player.Team.Name ..")"
 					end)
-					
+
 					return
 				end
 
@@ -197,7 +201,7 @@ pcall(function()
 				Frame.Team:Destroy()
 			end
 		end)
-		
+
 		Connections[player.Name.. "TeamColorChanged"] = player:GetPropertyChangedSignal("TeamColor"):Connect(function()
 			if player.TeamColor then
 				local teamTag = Frame:FindFirstChild("Team")
@@ -213,17 +217,17 @@ pcall(function()
 	end
 
 	local function RemoveNameTag(player: Player)
+		for i, connection in pairs(Connections) do
+			if typeof(i) == "string" and i:match(player.Name.. "Team") then
+				connection:Disconnect()
+			end
+		end
+		
 		local nameTag = NameTags[player]
 
 		if nameTag then
 			nameTag:Destroy()
 			NameTags[player] = nil
-		end
-
-		local connection: RBXScriptConnection = Connections[player.Name.. "TeamChanged"]
-
-		if connection then
-			connection:Disconnect()
 		end
 	end
 
@@ -253,26 +257,24 @@ pcall(function()
 					end
 
 					if player.Character then
-						player.Character.Parent = characterFolder
-
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
 
-							if player.Character:FindFirstChild("Head") then
+							if player.Character:FindFirstChild("HumanoidRootPart") then
 								AddNameTag(player)
 							end
 						end
+
+						player.Character.Parent = characterFolder
 					end
 
 					Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
-						character.Parent = characterFolder
-
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
-
-							character:WaitForChild("Head")
 							AddNameTag(player)
 						end
+
+						character.Parent = characterFolder
 					end)
 
 					Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
@@ -282,12 +284,10 @@ pcall(function()
 
 				Connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
 					Connections[player.Name.. 1] = player.CharacterAdded:Connect(function(character)
-						character.Parent = characterFolder
-
 						RemoveNameTag(player)
-
-						character:WaitForChild("Head")
 						AddNameTag(player)
+
+						character.Parent = characterFolder
 					end)
 
 					Connections[player.Name.. 2] = player.CharacterRemoving:Connect(function()
@@ -362,7 +362,7 @@ pcall(function()
 			end
 		end    
 	})
-
+	
 	ESP:AddToggle({
 		Name = "Rainbow ESP",
 		Default = false,
@@ -379,7 +379,7 @@ pcall(function()
 					ESPColor:Set(Color3FromHSVNew(hue, 1, 1))
 					hue += 1/1000
 
-					task.wait(0.01)
+					task.wait(0.001)
 
 					if hue >= 1 then
 						hue = 0
@@ -422,7 +422,7 @@ pcall(function()
 			end
 		end    
 	})
-	
+
 	Binds:AddBind({
 		Name = "Kill Switch",
 		Default = Enum.KeyCode.F1,
@@ -452,11 +452,11 @@ pcall(function()
 				characterFolder:Destroy()
 				characterFolder = nil
 			end
-			
+
 			Orion:Destroy()
 		end
 	})
-	
+
 	Binds:AddBind({
 		Name = "Hide UI",
 		Default = Enum.KeyCode.F2,
@@ -464,7 +464,7 @@ pcall(function()
 		Flag = "HideUI",
 		Hold = false,
 		Callback = function()
-			Orion.Enabled = not OrionLib.Enabled
+			Orion.Enabled = not Orion.Enabled
 		end    
 	})
 
