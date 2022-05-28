@@ -523,7 +523,7 @@ pcall(function()
 	})
 
 	Credits:AddParagraph(textDisplay == "Owner" and "You" or "Katrist#3130",
-		"Scripted the ESP"
+		"Scripted this ESP"
 	)
 
 	Credits:AddParagraph("shlex#0001",
