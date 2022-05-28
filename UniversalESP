@@ -39,6 +39,7 @@ pcall(function()
 	local old = mt.__namecall
 	local characterFolder = nil
 	local highlight = nil
+	local showDistance = false
 	local highlightYourself = false
 	local rainbowESP = false
 	local highlightColor = nil
@@ -168,7 +169,7 @@ pcall(function()
 		Username1.TextSize = 15
 		Username1.RichText = true
 		Username1.TextColor3 = Color3FromRGBNew(255, 255, 255)
-		Username1.Text = player.DisplayName .." (".. math.floor((LocalPlayer.Character.HumanoidRootPart.Position - HumanoidRootPart.Position).Magnitude) .."m)"
+		Username1.Text = showDistance and player.DisplayName .." (".. math.floor((LocalPlayer.Character.HumanoidRootPart.Position - HumanoidRootPart.Position).Magnitude) .."m)" or player.DisplayName
 		Username1.TextWrapped = false
 		Username1.Font = Enum.Font.SourceSansBold
 		Username1.TextScaled = false
@@ -217,6 +218,12 @@ pcall(function()
 		end)
 		
 		Connections[player.Name.. "DistanceCounter"] = RunService.Stepped:Connect(function()
+			if not showDistance then
+				Username1.Text = player.DisplayName
+				
+				return
+			end
+			
 			if not LocalPlayer.Character or not HumanoidRootPart then
 				return
 			end
@@ -284,7 +291,7 @@ pcall(function()
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
 							
-							if workspace.StreamingEnabled or player.Character:FindFirstChild("HumanoidRootPart") then
+							if workSpace.StreamingEnabled or player.Character:FindFirstChild("HumanoidRootPart") then
 								AddNameTag(player)
 							end
 						end
@@ -352,7 +359,17 @@ pcall(function()
 					characterFolder = nil
 				end
 			end
-		end    
+		end
+	})
+	
+	ESP:AddToggle({
+		Name = "Show Distance",
+		Default = false,
+		Save = true,
+		Flag = "ShowDistance",
+		Callback = function(Bool)
+			showDistance = Bool
+		end
 	})
 
 	ESP:AddToggle({
@@ -384,7 +401,7 @@ pcall(function()
 					LocalPlayer.Character.Parent = workSpace
 				end
 			end
-		end    
+		end
 	})
 	
 	ESP:AddToggle({
@@ -410,7 +427,7 @@ pcall(function()
 					end
 				end
 			end
-		end    
+		end
 	})
 
 	ESP:AddColorpicker({
@@ -444,7 +461,7 @@ pcall(function()
 			if characterFolder and highlight then
 				highlight.FillTransparency = fillTransparency
 			end
-		end    
+		end
 	})
 
 	Binds:AddBind({
@@ -482,14 +499,27 @@ pcall(function()
 	})
 
 	Binds:AddBind({
-		Name = "Hide UI",
+		Name = "Toggle UI",
 		Default = Enum.KeyCode.F2,
 		Save = true,
-		Flag = "HideUI",
+		Flag = "ToggleUI",
 		Hold = false,
 		Callback = function()
 			Orion.Enabled = not Orion.Enabled
-		end    
+		end
+	})
+	
+	Binds:AddBind({
+		Name = "Toggle ESP",
+		Default = Enum.KeyCode.F3,
+		Save = true,
+		Flag = "ToggleESP",
+		Hold = false,
+		Callback = function()
+			local ESP = OrionLib.Flags["ESP"]
+			
+			ESP:Set(not characterFolder)
+		end
 	})
 
 	Credits:AddParagraph(textDisplay == "Owner" and "You" or "Katrist#3130",
