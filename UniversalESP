@@ -453,7 +453,7 @@ pcall(function()
 		Save = true,
 		Flag = "FillTransparency",
 		Color = Color3FromRGBNew(141, 141, 141),
-		Increment = 10,
+		Increment = 5,
 		ValueName = "%",
 		Callback = function(number)
 			fillTransparency = number / 100
