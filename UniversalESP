@@ -128,6 +128,10 @@ pcall(function()
 	end
 
 	local function AddNameTag(player: Player)
+		if workSpace.StreamingEnabled then
+			LocalPlayer:RequestStreamAroundAsync(player.Character:GetPivot().Position, 5)
+		end
+		
 		local HumanoidRootPart = player.Character:WaitForChild("HumanoidRootPart", 5)
 		
 		if not HumanoidRootPart then
@@ -217,7 +221,7 @@ pcall(function()
 	end
 
 	local function RemoveNameTag(player: Player)
-		for i, connection in pairs(Connections) do
+		for i, connection in pairs (Connections) do
 			if typeof(i) == "string" and i:match(player.Name.. "Team") then
 				connection:Disconnect()
 			end
@@ -259,8 +263,8 @@ pcall(function()
 					if player.Character then
 						if player ~= LocalPlayer then
 							RemoveNameTag(player)
-
-							if player.Character:FindFirstChild("HumanoidRootPart") then
+							
+							if workspace.StreamingEnabled or player.Character:FindFirstChild("HumanoidRootPart") then
 								AddNameTag(player)
 							end
 						end
