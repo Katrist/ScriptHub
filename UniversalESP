@@ -74,7 +74,7 @@ pcall(function()
 	OrionLib:MakeNotification({
 		Name = "Universal ESP is loading...",
 		Content = "Welcome ".. textDisplay ..".\n\nScripted by ".. scripter ..".",
-		Image = "rbxassetid://4483345998",
+		Image = "rbxassetid://9765496064",
 		Time = 5
 	})
 
@@ -87,19 +87,19 @@ pcall(function()
 
 	local ESP = Window:MakeTab({
 		Name = "ESP",
-		Icon = "rbxassetid://4483345998",
+		Icon = "rbxassetid://9765479165",
 		PremiumOnly = false
 	})
 
 	local Binds = Window:MakeTab({
 		Name = "Binds",
-		Icon = "rbxassetid://4483345998",
+		Icon = "rbxassetid://9765478953",
 		PremiumOnly = false
 	})
 
 	local Credits = Window:MakeTab({
 		Name = "Credits",
-		Icon = "rbxassetid://4483345998",
+		Icon = "rbxassetid://9765479094",
 		PremiumOnly = false
 	})
 
