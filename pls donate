@@ -1,0 +1,42 @@
+--//Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+
+--//Variables
+local LocalPlayer = Players.LocalPlayer
+local leaderstats = LocalPlayer.leaderstats
+local ChatEvent = ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
+local CurrentCamera = workspace.CurrentCamera
+
+--//Tables
+local Messages = {
+	"pls donate",
+	"all donations appreciated!!",
+	"pls help me reach my goal of 1k robux"
+}
+
+local DonationMessages = {
+	"thanks for donating!!",
+	"thank you so much for donating!!!"
+}
+
+--//Functions
+LocalPlayer.Idled:connect(function()
+	VirtualUser:Button2Down(Vector2.new(0, 0), CurrentCamera.CFrame)
+
+	task.wait(1)
+	VirtualUser:Button2Up(Vector2.new(0, 0), CurrentCamera.CFrame)
+end)
+
+leaderstats.Raised:GetPropertyChangedSignal("Value"):Connect(function()
+	ChatEvent:FireServer(DonationMessages[Random.new():NextInteger(1, #DonationMessages)], "All")
+end)
+
+coroutine.wrap(function()
+	while true do
+		ChatEvent:FireServer(Messages[Random.new():NextInteger(1, #Messages)], "All")
+
+		task.wait(120)
+	end
+end)()
