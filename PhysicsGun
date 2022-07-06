@@ -602,13 +602,17 @@ local function StartGun()
 					arms = {Tool.Parent:FindFirstChild("Left Arm"), Tool.Parent:FindFirstChild("Right Arm")}
 					local head = Tool.Parent:FindFirstChild("Head")
 					torso = Tool.Parent:FindFirstChild("Torso")
-					if neck == nil then
-						neck = Tool.Parent:FindFirstChild("Torso").Neck
+					
+					if not neck then
+						neck = Tool.Parent:FindFirstChild("Head").Neck
 					end
-					if arms ~= nil and torso ~= nil then
+					
+					if arms and torso then
 						local sh = {torso:FindFirstChild("Left Shoulder"), torso:FindFirstChild("Right Shoulder")}
-						if sh ~= nil then
+						
+						if sh then
 							local yes = true
+							
 							if yes then
 								yes = false
 								sh[1].Part1 = nil
