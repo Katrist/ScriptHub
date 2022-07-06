@@ -1,39 +1,40 @@
-local function StartGun()
-	function sandbox(var, func)
-		local env = getfenv(func)
-		local newenv =
-			setmetatable(
+local function sandbox(var, func)
+	local env = getfenv(func)
+	local newenv =
+		setmetatable(
 			{},
 			{
 				__index = function(self, k)
 					if k == "script" then
-						return var
-					else
-						return env[k]
-					end
+					return var
+				else
+					return env[k]
+				end
 				end
 			}
 		)
-		setfenv(func, newenv)
-		return func
-	end
-	cors = {}
-	mas = Instance.new("Model", game:GetService("Lighting"))
-	Tool0 = Instance.new("Tool")
-	Part1 = Instance.new("Part")
-	CylinderMesh2 = Instance.new("CylinderMesh")
-	Part3 = Instance.new("Part")
-	LocalScript4 = Instance.new("LocalScript")
-	Script5 = Instance.new("Script")
-	LocalScript6 = Instance.new("LocalScript")
-	Script7 = Instance.new("Script")
-	LocalScript8 = Instance.new("LocalScript")
-	Part9 = Instance.new("Part")
-	Script10 = Instance.new("Script")
-	Part11 = Instance.new("Part")
-	Script12 = Instance.new("Script")
-	Part13 = Instance.new("Part")
-	Script14 = Instance.new("Script")
+	setfenv(func, newenv)
+	return func
+end
+
+local function StartGun()
+	local cors = {}
+	local mas = Instance.new("Model", game:GetService("Lighting"))
+	local Tool0 = Instance.new("Tool")
+	local Part1 = Instance.new("Part")
+	local CylinderMesh2 = Instance.new("CylinderMesh")
+	local Part3 = Instance.new("Part")
+	local LocalScript4 = Instance.new("LocalScript")
+	local Script5 = Instance.new("Script")
+	local LocalScript6 = Instance.new("LocalScript")
+	local Script7 = Instance.new("Script")
+	local LocalScript8 = Instance.new("LocalScript")
+	local Part9 = Instance.new("Part")
+	local Script10 = Instance.new("Script")
+	local Part11 = Instance.new("Part")
+	local Script12 = Instance.new("Script")
+	local Part13 = Instance.new("Part")
+	local Script14 = Instance.new("Script")
 	Tool0.Name = "Physics Gun"
 	Tool0.Parent = mas
 	Tool0.CanBeDropped = false
@@ -48,19 +49,19 @@ local function StartGun()
 	Part1.Size = Vector3.new(1, 0.400000036, 0.300000012)
 	Part1.CFrame =
 		CFrame.new(
-		-55.2695465,
-		0.696546972,
-		0.383156985,
-		0.96399641,
-		-4.98074878e-05,
-		0.265921414,
-		4.79998416e-05,
-		1,
-		1.32960558e-05,
-		-0.265921414,
-		-5.30653779e-08,
-		0.96399641
-	)
+			-55.2695465,
+			0.696546972,
+			0.383156985,
+			0.96399641,
+			-4.98074878e-05,
+			0.265921414,
+			4.79998416e-05,
+			1,
+			1.32960558e-05,
+			-0.265921414,
+			-5.30653779e-08,
+			0.96399641
+		)
 	Part1.BottomSurface = Enum.SurfaceType.Smooth
 	Part1.TopSurface = Enum.SurfaceType.Smooth
 	Part1.Color = Color3.new(0.0156863, 0.686275, 0.92549)
@@ -82,19 +83,19 @@ local function StartGun()
 	Part3.Size = Vector3.new(0.200000003, 0.25, 0.310000032)
 	Part3.CFrame =
 		CFrame.new(
-		-54.7998123,
-		0.774299085,
-		-0.757350147,
-		-0.0245519895,
-		0.99968797,
-		0.00460194098,
-		0.0169109926,
-		0.00501798885,
-		-0.999844491,
-		-0.999555528,
-		-0.0244703442,
-		-0.0170289185
-	)
+			-54.7998123,
+			0.774299085,
+			-0.757350147,
+			-0.0245519895,
+			0.99968797,
+			0.00460194098,
+			0.0169109926,
+			0.00501798885,
+			-0.999844491,
+			-0.999555528,
+			-0.0244703442,
+			-0.0170289185
+		)
 	Part3.BottomSurface = Enum.SurfaceType.Smooth
 	Part3.TopSurface = Enum.SurfaceType.Smooth
 	Part3.Color = Color3.new(0.0156863, 0.686275, 0.92549)
@@ -199,10 +200,10 @@ local function StartGun()
 						if not amISitting(player.Character) then
 							torso.CFrame =
 								CFrame.new(
-								torso.Position,
-								torso.Position +
+									torso.Position,
+									torso.Position +
 									(Vector3.new(mousePosition.X, torso.Position.Y, mousePosition.Z) - torso.Position).unit
-							)
+								)
 						else
 							--print("sitting")
 						end
@@ -223,8 +224,8 @@ local function StartGun()
 						local test = screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 1)
 						local nearPos =
 							game.Workspace.CurrentCamera.CoordinateFrame:vectorToWorldSpace(
-							screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 1)
-						)
+								screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 1)
+							)
 						nearPos = game.Workspace.CurrentCamera.CoordinateFrame.p - nearPos
 						local farPos = screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 50)
 						farPos = game.Workspace.CurrentCamera.CoordinateFrame:vectorToWorldSpace(farPos) * -1
@@ -509,14 +510,14 @@ local function StartGun()
 					if not RelativeValue then
 						RelativeValue =
 							Make(
-							"CFrameValue",
-							{
-								Parent = Part1,
-								Name = "qRelativeCFrameWeldValue",
-								Archivable = true,
-								Value = NewWeld.C1
-							}
-						)
+								"CFrameValue",
+								{
+									Parent = Part1,
+									Name = "qRelativeCFrameWeldValue",
+									Archivable = true,
+									Value = NewWeld.C1
+								}
+							)
 					end
 
 					return NewWeld
@@ -596,10 +597,10 @@ local function StartGun()
 				local neck = nil
 				local orginalC0 = CFrame.new(0, 1, 0, -1, -0, -0, 0, 0, 1, 0, 1, 0)
 
-				function Equip(mouse)
+				local function Equip(mouse)
 					task.wait(0.01)
 					arms = {Tool.Parent:FindFirstChild("Left Arm"), Tool.Parent:FindFirstChild("Right Arm")}
-					head = Tool.Parent:FindFirstChild("Head")
+					local head = Tool.Parent:FindFirstChild("Head")
 					torso = Tool.Parent:FindFirstChild("Torso")
 					if neck == nil then
 						neck = Tool.Parent:FindFirstChild("Torso").Neck
@@ -649,7 +650,7 @@ local function StartGun()
 					end
 				end
 
-				function Unequip(mouse)
+				local function Unequip(mouse)
 					if arms ~= nil and torso ~= nil then
 						local sh = {torso:FindFirstChild("Left Shoulder"), torso:FindFirstChild("Right Shoulder")}
 						if sh ~= nil then
@@ -673,7 +674,7 @@ local function StartGun()
 				Tool.Equipped:connect(Equip)
 				Tool.Unequipped:connect(Unequip)
 
-				function Animate()
+				local function Animate()
 					arms = {Tool.Parent:FindFirstChild("Left Arm"), Tool.Parent:FindFirstChild("Right Arm")}
 					if Tool.AnimateValue.Value == "Shoot" then
 						local weld1 = welds[1]
@@ -846,8 +847,8 @@ local function StartGun()
 					mesh.Scale = Vector3.new(.25, .25, dist)
 					task.wait()
 				end
-				line:remove()
-				script:remove()
+				line:Remove()
+				script:Remove()
 			end
 		)
 	)
@@ -860,16 +861,16 @@ local function StartGun()
 			function()
 				--Physics gun created by Killersoldier45
 				task.wait()
-				tool = script.Parent
-				lineconnect = tool.LineConnect
-				object = nil
-				mousedown = false
-				found = false
-				BP = Instance.new("BodyPosition")
-				BP.maxForce = Vector3.new(math.huge * math.huge, math.huge * math.huge, math.huge * math.huge) --pwns everyone elses bodyposition
+				local tool = script.Parent
+				local lineconnect = tool.LineConnect
+				local object = nil
+				local mousedown = false
+				local found = false
+				local BP = Instance.new("BodyPosition")
+				BP.MaxForce = Vector3.new(math.huge * math.huge, math.huge * math.huge, math.huge * math.huge) --pwns everyone elses bodyposition
 				BP.P = BP.P * 10 --faster movement. less bounceback.
-				dist = nil
-				point = Instance.new("Part")
+				local dist = nil
+				local point = Instance.new("Part")
 				point.Locked = true
 				point.Anchored = true
 				point.formFactor = 0
@@ -882,15 +883,15 @@ local function StartGun()
 				mesh.MeshType = "Sphere"
 				mesh.Scale = Vector3.new(.2, .2, .2)
 				mesh.Parent = point
-				handle = tool.Shoot
-				front = tool.Shoot
-				color = tool.Shoot
-				objval = nil
+				local handle = tool.Shoot
+				local front = tool.Shoot
+				local color = tool.Shoot
+				local objval = nil
 				local hooked = false
 				local hookBP = BP:clone()
-				hookBP.maxForce = Vector3.new(30000, 30000, 30000)
+				hookBP.MaxForce = Vector3.new(30000, 30000, 30000)
 
-				function LineConnect(part1, part2, parent)
+				local function LineConnect(part1, part2, parent)
 					local p1 = Instance.new("ObjectValue")
 					p1.Value = part1
 					p1.Name = "Part1"
@@ -915,7 +916,7 @@ local function StartGun()
 					end
 				end
 
-				function onButton1Down(mouse)
+				local function onButton1Down(mouse)
 					if (mousedown == true) then
 						return
 					end
@@ -941,7 +942,7 @@ local function StartGun()
 									end
 									task.wait()
 								end
-								p:remove()
+								p:Remove()
 							end
 						)
 					)
@@ -965,12 +966,12 @@ local function StartGun()
 						BP.position = front.Position + lv.lookVector * dist
 						task.wait()
 					end
-					BP:remove()
+					BP:Remove()
 					object = nil
 					objval.Value = nil
 				end
 
-				function onKeyDown(key, mouse)
+				local function onKeyDown(key, mouse)
 					local key = key:lower()
 					local yesh = false
 					if (key == "q") then
@@ -987,7 +988,7 @@ local function StartGun()
 								return nil
 							end
 						end
-						BG = Instance.new("BodyGyro")
+						local BG = Instance.new("BodyGyro")
 						BG.maxTorque = Vector3.new(math.huge, math.huge, math.huge)
 						BG.cframe = CFrame.new(object.CFrame.p)
 						BG.Parent = object
@@ -1075,7 +1076,7 @@ local function StartGun()
 							BP.position = front.Position + lv.lookVector * dist
 							task.wait()
 						end
-						BP:remove()
+						BP:Remove()
 						object = nil
 						objval.Value = nil
 					end
@@ -1104,17 +1105,17 @@ local function StartGun()
 					end
 				end
 
-				function onEquipped(mouse)
-					keymouse = mouse
+				local function onEquipped(mouse)
+					local keymouse = mouse
 					local char = tool.Parent
-					human = char.Humanoid
+					local human = char.Humanoid
 					human.Changed:connect(
 						function()
 							if (human.Health == 0) then
 								mousedown = false
-								BP:remove()
-								point:remove()
-								tool:remove()
+								BP:Remove()
+								point:Remove()
+								tool:Remove()
 							end
 						end
 					)
@@ -1150,19 +1151,19 @@ local function StartGun()
 	Part9.Size = Vector3.new(1.20000005, 0.649999976, 2)
 	Part9.CFrame =
 		CFrame.new(
-		-54.8191681,
-		0.773548007,
-		-0.0522949994,
-		0.00736002205,
-		4.68389771e-11,
-		-0.999974668,
-		4.72937245e-11,
-		1,
-		1.41590961e-10,
-		0.999974668,
-		5.09317033e-11,
-		0.00736002252
-	)
+			-54.8191681,
+			0.773548007,
+			-0.0522949994,
+			0.00736002205,
+			4.68389771e-11,
+			-0.999974668,
+			4.72937245e-11,
+			1,
+			1.41590961e-10,
+			0.999974668,
+			5.09317033e-11,
+			0.00736002252
+		)
 	Part9.Color = Color3.new(0.0156863, 0.686275, 0.92549)
 	Part9.Position = Vector3.new(-54.8191681, 0.773548007, -0.0522949994)
 	Part9.Orientation = Vector3.new(0, -89.5799942, 0)
@@ -1206,19 +1207,19 @@ local function StartGun()
 	Part11.Size = Vector3.new(0.280000001, 0.25999999, 0.200000003)
 	Part11.CFrame =
 		CFrame.new(
-		-54.9808807,
-		0.99843204,
-		0.799362957,
-		0.00736002205,
-		0.562958956,
-		-0.826454222,
-		4.72937245e-11,
-		0.826475084,
-		0.56297338,
-		0.999974668,
-		-0.00414349511,
-		0.00608287565
-	)
+			-54.9808807,
+			0.99843204,
+			0.799362957,
+			0.00736002205,
+			0.562958956,
+			-0.826454222,
+			4.72937245e-11,
+			0.826475084,
+			0.56297338,
+			0.999974668,
+			-0.00414349511,
+			0.00608287565
+		)
 	Part11.Color = Color3.new(0.0156863, 0.686275, 0.92549)
 	Part11.Position = Vector3.new(-54.9808807, 0.99843204, 0.799362957)
 	Part11.Orientation = Vector3.new(-34.2599983, -89.5799942, 0)
@@ -1262,19 +1263,19 @@ local function StartGun()
 	Part13.Size = Vector3.new(0.280000001, 0.25999999, 0.200000003)
 	Part13.CFrame =
 		CFrame.new(
-		-54.5909271,
-		0.978429973,
-		0.799362957,
-		-0.0830051303,
-		-0.584483683,
-		-0.807150841,
-		0.0241250042,
-		0.808528602,
-		-0.58796227,
-		0.996258855,
-		-0.0682764053,
-		-0.0530113392
-	)
+			-54.5909271,
+			0.978429973,
+			0.799362957,
+			-0.0830051303,
+			-0.584483683,
+			-0.807150841,
+			0.0241250042,
+			0.808528602,
+			-0.58796227,
+			0.996258855,
+			-0.0682764053,
+			-0.0530113392
+		)
 	Part13.Color = Color3.new(0.0156863, 0.686275, 0.92549)
 	Part13.Position = Vector3.new(-54.5909271, 0.978429973, 0.799362957)
 	Part13.Orientation = Vector3.new(36.0099983, -93.7599945, 1.70999992)
@@ -1331,7 +1332,7 @@ end
 
 game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
 	task.wait(1)
-	
+
 	StartGun()
 end)
 
