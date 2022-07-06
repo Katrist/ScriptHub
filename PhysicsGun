@@ -117,9 +117,6 @@ local function StartGun()
 				local mouse = player:GetMouse()
 				local Tool = script.Parent
 
-				-- Variables for Module Scripts
-				local screenSpace = require(Tool:WaitForChild("ScreenSpace"))
-
 				local connection
 				-- Variables for character joints
 
@@ -212,40 +209,18 @@ local function StartGun()
 
 				-- Function to bind to render stepped if player is on PC
 				local function pcFrame()
-					frame(mouse.Hit.p)
+					frame(mouse.Hit.Position)
 				end
 
 				-- Function to bind to touch moved if player is on mobile
 				local function mobileFrame(touch, processed)
-					-- Check to see if the touch was on a UI element. If so, we don't want to update anything
-					if not processed then
-						-- Calculate touch position in world space. Uses Stravant's ScreenSpace Module script
-						-- to create a ray from the camera.
-						local test = screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 1)
-						local nearPos =
-							game.Workspace.CurrentCamera.CoordinateFrame:vectorToWorldSpace(
-								screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 1)
-							)
-						nearPos = game.Workspace.CurrentCamera.CoordinateFrame.p - nearPos
-						local farPos = screenSpace.ScreenToWorld(touch.Position.X, touch.Position.Y, 50)
-						farPos = game.Workspace.CurrentCamera.CoordinateFrame:vectorToWorldSpace(farPos) * -1
-						if farPos.magnitude > 900 then
-							farPos = farPos.unit * 900
-						end
-						local ray = Ray.new(nearPos, farPos)
-						local part, pos = game.Workspace:FindPartOnRay(ray, player.Character)
-
-						-- if a position was found on the ray then update the character's rotation
-						if pos then
-							frame(pos)
-						end
-					end
+					
 				end
 
 				local oldIcon = nil
 				-- Function to bind to equip event
 				local function equip()
-					local torso = player.Character.Torso
+					local torso = player.Character.HumanoidRootPart
 
 					-- Setup joint variables
 					neck = torso.Neck
@@ -276,35 +251,6 @@ local function StartGun()
 							mobileShouldTrack = false
 						end
 					)
-
-					-- Fire server's equip event
-					game.ReplicatedStorage.ROBLOX_PistolEquipEvent:FireServer()
-
-					-- Bind event for when mouse is clicked to fire server's fire event
-					mouse.Button1Down:connect(
-						function()
-							game.ReplicatedStorage.ROBLOX_PistolFireEvent:FireServer(mouse.Hit.p)
-						end
-					)
-
-					-- Bind reload event to mobile button and r key
-					contextActionService:BindActionToInputTypes(
-						"Reload",
-						function()
-							game.ReplicatedStorage.ROBLOX_PistolReloadEvent:FireServer()
-						end,
-						true,
-						""
-					)
-
-					-- If game uses filtering enabled then need to update server while tool is
-					-- held by character.
-					if workspace.FilteringEnabled then
-						while connection do
-							task.wait()
-							game.ReplicatedStorage.ROBLOX_PistolUpdateEvent:FireServer(neck.C0, shoulder.C0)
-						end
-					end
 				end
 
 				-- Function to bind to Unequip event
@@ -313,7 +259,6 @@ local function StartGun()
 						connection:disconnect()
 					end
 					contextActionService:UnbindAction("Reload")
-					game.ReplicatedStorage.ROBLOX_PistolUnequipEvent:FireServer()
 					mouse.Icon = oldIcon
 					neck.C0 = oldNeckC0
 					shoulder.C0 = oldShoulderC0
