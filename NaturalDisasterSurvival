@@ -13,6 +13,6 @@ LocalPlayer.CharacterAdded:Connect(function(character)
 	FallDamageScript:Destroy()
 end)
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source", true))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Katrist/ScriptHub/main/PhysicsGun"), true)()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Katrist/ScriptHub/main/UniversalESP"), true)()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source", true))()
