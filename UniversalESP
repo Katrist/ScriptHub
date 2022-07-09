@@ -109,18 +109,21 @@ pcall(function()
 		Team.TextWrapped = false
 		Team.Font = Enum.Font.SourceSansBold
 		Team.Parent = Frame
+		
+		if player.Team then
+			Connections[player.Name.. "Team"] = player.Team:GetPropertyChangedSignal("Name"):Connect(function()
+				Team.Text = "(".. player.Team.Name ..")"
+			end)
+		end
 
-		Connections[player.Name.. "Team"] = player.Team:GetPropertyChangedSignal("Name"):Connect(function()
-			Team.Text = "(".. player.Team.Name ..")"
-		end)
 	end
 
 	local function AddNameTag(player)
-		if workSpace.StreamingEnabled then
+		if workSpace.StreamingEnabled and player.Character then
 			LocalPlayer:RequestStreamAroundAsync(player.Character:GetPivot().Position, 5)
 		end
 
-		local HumanoidRootPart = player.Character:WaitForChild("HumanoidRootPart", 5)
+		local HumanoidRootPart = player.Character and player.Character:WaitForChild("HumanoidRootPart", 5)
 
 		if not HumanoidRootPart then
 			return
