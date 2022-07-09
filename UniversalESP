@@ -128,6 +128,12 @@ pcall(function()
 		if not HumanoidRootPart then
 			return
 		end
+		
+		local LocalHumanoidRootPart = LocalPlayer.Character and LocalPlayer.Character:WaitForChild("HumanoidRootPart", 5)
+		
+		if not LocalHumanoidRootPart then
+			return
+		end
 
 		local Username = InstanceNew("BillboardGui")
 		Username.Name = "Username"
@@ -159,7 +165,7 @@ pcall(function()
 		Username1.TextSize = 15
 		Username1.RichText = true
 		Username1.TextColor3 = Color3FromRGBNew(255, 255, 255)
-		Username1.Text = showDistance and player.DisplayName .." (".. math.floor((LocalPlayer.Character.HumanoidRootPart.Position - HumanoidRootPart.Position).Magnitude) .."m)" or player.DisplayName
+		Username1.Text = showDistance and player.DisplayName .." (".. math.floor((LocalHumanoidRootPart.Position - HumanoidRootPart.Position).Magnitude) .."m)" or player.DisplayName
 		Username1.TextWrapped = false
 		Username1.Font = Enum.Font.SourceSansBold
 		Username1.TextScaled = false
