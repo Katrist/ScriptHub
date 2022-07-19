@@ -152,8 +152,9 @@ local function TeleportToHelicopter(isTeam)
 		
 	local helicopterSpawn = base:WaitForChild("Helikopter spawn")
 	local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
+	local functionality = foundHelicopter and foundHelicopter:FindFirstChild("Functionality")
 
-	if not foundHelicopter then
+	if not functionality then
 		Orion:MakeNotification({
 			Name = "Helicopter could not be found",
 			Content = "Please try again later.",
@@ -165,7 +166,7 @@ local function TeleportToHelicopter(isTeam)
 	end
 
 	local foundSeat = false
-	local pilotSeat = foundHelicopter.Functionality.Pilot
+	local pilotSeat = functionality.Pilot
 
 	if not pilotSeat.Occupant then
 		foundSeat = true
