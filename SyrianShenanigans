@@ -1,0 +1,216 @@
+if getgenv().SYRIANLOADED then
+	return
+end
+
+--//Services
+local Game = game
+local Players = Game:GetService("Players")
+local ReplicatedStorage = Game:GetService("ReplicatedStorage")
+local Workspace = workspace
+
+--//Libraries
+local Orion = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+
+--//Variables
+local LocalPlayer = Players.LocalPlayer
+local Map = Workspace.Map
+
+local Window = Orion:MakeWindow({
+	Name = "Syrian Shenanigans", 
+	HidePremium = false, 
+	SaveConfig = true,
+	ConfigFolder = "SyrianConfigs",
+	IntroText = "Syrian Shenanigans"
+})
+
+local Classes = Window:MakeTab({
+	Name = "Classes",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local MainClasses = Classes:AddSection({
+	Name = "Main"
+})
+
+local Teleports = Window:MakeTab({
+	Name = "Teleports",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local MainTeleports = Teleports:AddSection({
+	Name = "Main"
+})
+
+local MiscTeleports = Teleports:AddSection({
+	Name = "Miscellaneous"
+})
+
+local Teams = Window:MakeTab({
+	Name = "Teams",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local MainTeams = Teams:AddSection({
+	Name = "Main"
+})
+
+local Credits = Window:MakeTab({
+	Name = "Credits",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local MainCredits = Teleports:AddSection({
+	Name = "Main"
+})
+
+--//Functions
+local function GetClass(className)	
+	local Folder = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn", 5) or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn", 5)
+	
+	if not Folder then
+		return
+	end
+
+	local classBoxes = {}
+
+	for i, child in ipairs(Folder:GetChildren()) do
+		if child.Name == "ClassBox" then
+			table.insert(classBoxes, child)
+		end
+	end
+	
+	local gunModel = nil
+	
+	for i, classBox in ipairs(classBoxes) do
+		local classGunModel = classBox:FindFirstChild(className)
+		
+		if not classGunModel then
+			continue
+		end
+		
+		gunModel = classGunModel
+	end
+	
+	if not gunModel then
+		return
+	end
+	
+	fireclickdetector(gunModel.ClickDetector)
+end
+
+local function Teleport(CFrame)
+	if not LocalPlayer.Character then
+		return
+	end
+	
+	LocalPlayer.Character:PivotTo(CFrame)
+end
+
+MainClasses:AddButton({
+	Name = "Machine Gunner",
+	Flag = "MachineGunner",
+	Callback = function()
+		GetClass("Machine Gunner")
+	end
+})
+
+MainClasses:AddButton({
+	Name = "Tanker",
+	Flag = "Tanker",
+	Callback = function()
+		GetClass("Tanker")
+	end
+})
+
+MainClasses:AddButton({
+	Name = "Marksman",
+	Flag = "Marksman",
+	Callback = function()
+		GetClass("Sniper")
+	end
+})
+
+MainClasses:AddButton({
+	Name = "Rifleman",
+	Flag = "Rifleman",
+	Callback = function()
+		GetClass("Infantry")
+	end
+})
+
+MainClasses:AddButton({
+	Name = "Anti Tank",
+	Flag = "AntiTank",
+	Callback = function()
+		GetClass("Anti Tank")
+	end
+})
+
+MainTeleports:AddButton({
+	Name = "A",
+	Flag = "A",
+	Callback = function()
+		Teleport(CFrame.new(953.263733, 48.8458405, -1388.88696, -0.999710679, 0.0239229836, 0.0025293231, 0.0238033403, 0.99892199, -0.0398465917, -0.00347984955, -0.0397748314, -0.999202788))
+	end
+})
+
+MainTeleports:AddButton({
+	Name = "B",
+	Flag = "B",
+	Callback = function()
+		Teleport(CFrame.new(618.627197, 27.1264309, -715.308167, 0.0871893987, 7.4505806e-09, -0.996192098, 2.89292075e-08, 0.999999464, -3.7252903e-09, 0.996191919, 2.81725079e-08, 0.0871894211))
+	end
+})
+
+MainTeleports:AddButton({
+	Name = "C",
+	Flag = "C",
+	Callback = function()
+		Teleport(CFrame.new(437.001617, 5.46249237, -54.3074951, 0.906297863, 9.53457189e-08, -0.422642976, 1.23979049e-07, 0.999996781, 4.02618312e-08, 0.422642767, 8.88878091e-08, 0.90629828))
+	end
+})
+
+MiscTeleports:AddButton({
+	Name = "greeners base",
+	Flag = "greenersbase",
+	Callback = function()
+		Teleport(CFrame.new(1900.40857, 5.43672743, -234.046738, -1, -2.47957388e-07, -2.98022638e-08, -2.47957388e-07, 1, 8.0523904e-08, 2.98022389e-08, 8.05239111e-08, -1))
+	end
+})
+
+MiscTeleports:AddButton({
+	Name = "sandoids base",
+	Flag = "sandoidsbase",
+	Callback = function()
+		Teleport(CFrame.new(-252.102463, 5.44453182, -1701.30249, 0.999999881, 4.79958514e-15, 1.0658141e-14, 4.79958514e-15, 1, 1.27886653e-29, 1.0658141e-14, 1.27886653e-29, 1))
+	end
+})
+
+MainTeams:AddButton({
+	Name = "greeners",
+	Flag = "greeners",
+	Callback = function()
+		ReplicatedStorage.ChangeTeam:FireServer(BrickColor.new(323))
+	end
+})
+
+MainTeams:AddButton({
+	Name = "sandoids",
+	Flag = "sandoids",
+	Callback = function()
+		ReplicatedStorage.ChangeTeam:FireServer(BrickColor.new(226))
+	end
+})
+
+MainCredits:AddParagraph(
+	"Katrist",
+	"Scripted the functions."
+)
+
+Orion:Init()
+
+getgenv().SYRIANLOADED = true
