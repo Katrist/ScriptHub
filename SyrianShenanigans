@@ -4,27 +4,28 @@ end
 
 --//Services
 local Game = game
+local ProtectedUI = gethui()
 local Players = Game:GetService("Players")
 local ReplicatedStorage = Game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 local ScriptContext = game:GetService("ScriptContext")
-local Error = ScriptContext.Error
 local Workspace = workspace
 
 --//Libraries
 local Orion = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
 
 --//Variables
+local OrionUI = ProtectedUI.Orion
 local LocalPlayer = Players.LocalPlayer
 local Error = ScriptContext.Error
-local Map = Workspace.Map
 
-coroutine.wrap(function()
-	while task.wait() do
-		for i, connection in pairs(getconnections(Error)) do
-			connection:Disable()
-		end
-	end
-end)()
+Orion:MakeNotification({
+	Name = "Welcome, ".. LocalPlayer.DisplayName,
+	Content = "Press F2 to hide the UI, you can change the controls in Keybinds.",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+})
 
 local Window = Orion:MakeWindow({
 	Name = "Syrian Shenanigans", 
@@ -96,7 +97,8 @@ local MainCredits = Credits:AddSection({
 local destination = nil
 
 --//Functions
-local function GetClass(className)	
+local function GetClass(className)
+	local Map = Workspace.Map
 	local Folder = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn")
 
 	local classBoxes = {} 
@@ -106,19 +108,19 @@ local function GetClass(className)
 			table.insert(classBoxes, child)
 		end
 	end
-	
+
 	local gunModel = nil
-	
+
 	for i, classBox in ipairs(classBoxes) do
 		local classGunModel = classBox:FindFirstChild(className)
-		
+
 		if not classGunModel then
 			continue
 		end
-		
+
 		gunModel = classGunModel
 	end
-	
+
 	fireclickdetector(gunModel.ClickDetector)
 end
 
@@ -126,13 +128,13 @@ local function Teleport(CFrame)
 	if not LocalPlayer.Character then
 		return
 	end
-	
+
 	LocalPlayer.Character:PivotTo(CFrame)
 end
 
 local function Sit(seat)
 	local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-	
+
 	if not Humanoid or Humanoid:GetState() == Enum.HumanoidStateType.Dead then
 		Orion:MakeNotification({
 			Name = "Unable to sit Humanoid",
@@ -140,23 +142,24 @@ local function Sit(seat)
 			Image = "rbxassetid://4483345998",
 			Time = 5
 		})
-		
+
 		return
 	end
-	
+
 	if Humanoid.Sit then
 		Humanoid.Sit = false
-		
+
 		task.wait(0.1)
 	end
-	
+
 	seat:Sit(Humanoid)
 end
 
 local function TeleportToHelicopter(isTeam)
+	local Map = Workspace.Map
 	local base = isTeam and (LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn"))
 		or LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("sandoids spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("greeners spawn")
-		
+
 	local helicopterSpawn = base:WaitForChild("Helikopter spawn")
 	local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
 	local functionality = foundHelicopter and foundHelicopter:FindFirstChild("Functionality")
@@ -199,6 +202,12 @@ local function TeleportToHelicopter(isTeam)
 
 	Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))
 end
+
+RunService.Heartbeat:Connect(function()
+	for i, connection in pairs(getconnections(Error)) do
+		connection:Disable()
+	end
+end)
 
 MainClasses:AddButton({
 	Name = "Machine Gunner",
@@ -329,6 +338,28 @@ MainTeams:AddButton({
 })
 
 MainKeybinds:AddBind({
+	Name = "Hide UI",
+	Default = Enum.KeyCode.F2,
+	Save = true,
+	Flag = "HideUI",
+	Hold = false,
+	Callback = function()
+		OrionUI.Enabled = not OrionUI.Enabled
+
+		if OrionUI.Enabled then
+			return
+		end
+
+		Orion:MakeNotification({
+			Name = "UI hidden",
+			Content = "Press F2 to enable the UI",
+			Image = "rbxassetid://4483345998",
+			Time = 5
+		})
+	end  
+})
+
+MainKeybinds:AddBind({
 	Name = "Teleport to destination",
 	Default = Enum.KeyCode.T,
 	Save = true,
@@ -338,7 +369,7 @@ MainKeybinds:AddBind({
 		if not destination then
 			return
 		end
-		
+
 		Orion.Flags[destination]:Press()
 	end  
 })
@@ -359,7 +390,7 @@ MainKeybinds:AddDropdown({
 		"Tower",
 		"Church"
 	},
-	
+
 	Callback = function(selection)
 		destination = selection
 	end    
