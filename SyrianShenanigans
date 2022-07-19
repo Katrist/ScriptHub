@@ -6,6 +6,8 @@ end
 local Game = game
 local Players = Game:GetService("Players")
 local ReplicatedStorage = Game:GetService("ReplicatedStorage")
+local ScriptContext = game:GetService("ScriptContext")
+local Error = ScriptContext.Error
 local Workspace = workspace
 
 --//Libraries
@@ -13,7 +15,16 @@ local Orion = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexwa
 
 --//Variables
 local LocalPlayer = Players.LocalPlayer
+local Error = ScriptContext.Error
 local Map = Workspace.Map
+
+coroutine.wrap(function()
+	while task.wait() do
+		for i, connection in pairs(getconnections(Error)) do
+			connection:Disable()
+		end
+	end
+end)()
 
 local Window = Orion:MakeWindow({
 	Name = "Syrian Shenanigans", 
@@ -43,6 +54,10 @@ local MainTeleports = Teleports:AddSection({
 	Name = "Main"
 })
 
+local FunTeleports = Teleports:AddSection({
+	Name = "Fun"
+})
+
 local MiscTeleports = Teleports:AddSection({
 	Name = "Miscellaneous"
 })
@@ -69,13 +84,9 @@ local MainCredits = Credits:AddSection({
 
 --//Functions
 local function GetClass(className)	
-	local Folder = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn", 5) or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn", 5)
-	
-	if not Folder then
-		return
-	end
+	local Folder = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn")
 
-	local classBoxes = {}
+	local classBoxes = {} 
 
 	for i, child in ipairs(Folder:GetChildren()) do
 		if child.Name == "ClassBox" then
@@ -95,10 +106,6 @@ local function GetClass(className)
 		gunModel = classGunModel
 	end
 	
-	if not gunModel then
-		return
-	end
-	
 	fireclickdetector(gunModel.ClickDetector)
 end
 
@@ -108,6 +115,16 @@ local function Teleport(CFrame)
 	end
 	
 	LocalPlayer.Character:PivotTo(CFrame)
+end
+
+local function Sit(seat)
+	local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+	
+	if not Humanoid then
+		return
+	end
+	
+	seat:Sit(Humanoid)
 end
 
 MainClasses:AddButton({
@@ -188,6 +205,101 @@ MainTeleports:AddButton({
 	Callback = function()
 		Teleport(CFrame.new(-252.102463, 5.44453182, -1701.30249, 0.999999881, 4.79958514e-15, 1.0658141e-14, 4.79958514e-15, 1, 1.27886653e-29, 1.0658141e-14, 1.27886653e-29, 1))
 	end
+})
+
+FunTeleports:AddButton({
+	Name = "Team Helicopter",
+	Flag = "TeamHelicopter",
+	Callback = function()
+		local base = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn")
+		local helicopterSpawn = base:WaitForChild("Helikopter spawn")
+		local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
+		
+		if not foundHelicopter then
+			Orion:MakeNotification({
+				Name = "Helicopter could not be found",
+				Content = "Please try again later.",
+				Image = "rbxassetid://4483345998",
+				Time = 5
+			})
+			
+			return
+		end
+		
+		local foundSeat = false
+		local pilotSeat = foundHelicopter.Functionality.Pilot
+		
+		if pilotSeat and not pilotSeat.Occupant then
+			foundSeat = true
+			
+			Sit(pilotSeat)
+			
+			return
+		end
+		
+		for i, descendant in ipairs(foundHelicopter:GetDescendants()) do
+			if descendant:IsA("Seat") and not descendant.Occupant then
+				foundSeat = true
+				
+				Sit(descendant)
+				
+				return
+			end
+		end
+		
+		if foundSeat then
+			return
+		end
+		
+		Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))
+	end
+})
+
+FunTeleports:AddButton({
+	Name = "Enemy Helicopter",
+	Flag = "EnemyHelicopter",
+	Callback = function()
+		local base = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("sandoids spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("greeners spawn")
+		local helicopterSpawn = base:WaitForChild("Helikopter spawn")
+		local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
+
+		if not foundHelicopter then
+			Orion:MakeNotification({
+				Name = "Helicopter could not be found",
+				Content = "Please try again later.",
+				Image = "rbxassetid://4483345998",
+				Time = 5
+			})
+
+			return
+		end
+
+		local foundSeat = false
+		local pilotSeat = foundHelicopter.Functionality.Pilot
+
+		if pilotSeat and not pilotSeat.Occupant then
+			foundSeat = true
+
+			Sit(pilotSeat)
+
+			return
+		end
+
+		for i, descendant in ipairs(foundHelicopter:GetDescendants()) do
+			if descendant:IsA("Seat") and not descendant.Occupant then
+				foundSeat = true
+
+				Sit(descendant)
+
+				return
+			end
+		end
+
+		if foundSeat then
+			return
+		end
+
+		Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))	end
 })
 
 MiscTeleports:AddButton({
