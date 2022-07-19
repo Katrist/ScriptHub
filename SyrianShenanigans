@@ -146,6 +146,52 @@ local function Sit(seat)
 	seat:Sit(Humanoid)
 end
 
+local function TeleportToHelicopter(isTeam)
+	local base = isTeam and (LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn"))
+		or LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("sandoids spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("greeners spawn")
+		
+	local helicopterSpawn = base:WaitForChild("Helikopter spawn")
+	local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
+
+	if not foundHelicopter then
+		Orion:MakeNotification({
+			Name = "Helicopter could not be found",
+			Content = "Please try again later.",
+			Image = "rbxassetid://4483345998",
+			Time = 5
+		})
+
+		return
+	end
+
+	local foundSeat = false
+	local pilotSeat = foundHelicopter.Functionality.Pilot
+
+	if not pilotSeat.Occupant then
+		foundSeat = true
+
+		Sit(pilotSeat)
+
+		return
+	end
+
+	for i, descendant in ipairs(foundHelicopter:GetDescendants()) do
+		if descendant:IsA("Seat") and not descendant.Occupant then
+			foundSeat = true
+
+			Sit(descendant)
+
+			return
+		end
+	end
+
+	if foundSeat then
+		return
+	end
+
+	Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))
+end
+
 MainClasses:AddButton({
 	Name = "Machine Gunner",
 	Flag = "MachineGunner",
@@ -230,47 +276,7 @@ FunTeleports:AddButton({
 	Name = "Team Helicopter",
 	Flag = "Team Helicopter",
 	Callback = function()
-		local base = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn")
-		local helicopterSpawn = base:WaitForChild("Helikopter spawn")
-		local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
-		
-		if not foundHelicopter then
-			Orion:MakeNotification({
-				Name = "Helicopter could not be found",
-				Content = "Please try again later.",
-				Image = "rbxassetid://4483345998",
-				Time = 5
-			})
-			
-			return
-		end
-		
-		local foundSeat = false
-		local pilotSeat = foundHelicopter.Functionality.Pilot
-		
-		if not pilotSeat.Occupant then
-			foundSeat = true
-			
-			Sit(pilotSeat)
-			
-			return
-		end
-		
-		for i, descendant in ipairs(foundHelicopter:GetDescendants()) do
-			if descendant:IsA("Seat") and not descendant.Occupant then
-				foundSeat = true
-				
-				Sit(descendant)
-				
-				return
-			end
-		end
-		
-		if foundSeat then
-			return
-		end
-		
-		Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))
+		TeleportToHelicopter(true)
 	end
 })
 
@@ -278,47 +284,7 @@ FunTeleports:AddButton({
 	Name = "Enemy Helicopter",
 	Flag = "Enemy Helicopter",
 	Callback = function()
-		local base = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("sandoids spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("greeners spawn")
-		local helicopterSpawn = base:WaitForChild("Helikopter spawn")
-		local foundHelicopter = helicopterSpawn:FindFirstChild("helikopter")
-
-		if not foundHelicopter then
-			Orion:MakeNotification({
-				Name = "Helicopter could not be found",
-				Content = "Please try again later.",
-				Image = "rbxassetid://4483345998",
-				Time = 5
-			})
-
-			return
-		end
-
-		local foundSeat = false
-		local pilotSeat = foundHelicopter.Functionality.Pilot
-
-		if not pilotSeat.Occupant then
-			foundSeat = true
-
-			Sit(pilotSeat)
-
-			return
-		end
-
-		for i, descendant in ipairs(foundHelicopter:GetDescendants()) do
-			if descendant:IsA("Seat") and not descendant.Occupant then
-				foundSeat = true
-
-				Sit(descendant)
-
-				return
-			end
-		end
-
-		if foundSeat then
-			return
-		end
-
-		Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))	
+		TeleportToHelicopter(false)
 	end
 })
 
@@ -365,9 +331,7 @@ MainKeybinds:AddBind({
 			return
 		end
 		
-		--[[
 		Orion.Flags[destination]:Press()
-		]]
 	end  
 })
 
