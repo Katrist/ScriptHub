@@ -154,7 +154,7 @@ MainTeleports:AddButton({
 	Name = "A",
 	Flag = "A",
 	Callback = function()
-		Teleport(CFrame.new(953.263733, 48.8458405, -1388.88696, -0.999710679, 0.0239229836, 0.0025293231, 0.0238033403, 0.99892199, -0.0398465917, -0.00347984955, -0.0397748314, -0.999202788))
+		Teleport(CFrame.new(953.263733, 48.8458405, -1388.88696, -0.999710679, 0.0239229836, 0.0025293231, 0.0238033403, 0.99892199, -0.0398465917, -0.00347984955, -0.0397748314, -1))
 	end
 })
 
@@ -162,7 +162,7 @@ MainTeleports:AddButton({
 	Name = "B",
 	Flag = "B",
 	Callback = function()
-		Teleport(CFrame.new(618.627197, 27.1264309, -715.308167, 0.0871893987, 7.4505806e-09, -0.996192098, 2.89292075e-08, 0.999999464, -3.7252903e-09, 0.996191919, 2.81725079e-08, 0.0871894211))
+		Teleport(CFrame.new(618.627197, 27.1264309, -715.308167, 0.0871893987, 7.4505806e-09, -0.996192098, 2.89292075e-08, 0.999999464, -3.7252903e-09, 0.996191919, 2.81725079e-08, 0))
 	end
 })
 
@@ -170,11 +170,11 @@ MainTeleports:AddButton({
 	Name = "C",
 	Flag = "C",
 	Callback = function()
-		Teleport(CFrame.new(437.001617, 5.46249237, -54.3074951, 0.906297863, 9.53457189e-08, -0.422642976, 1.23979049e-07, 0.999996781, 4.02618312e-08, 0.422642767, 8.88878091e-08, 0.90629828))
+		Teleport(CFrame.new(437.001617, 5.46249237, -54.3074951, 0.906297863, 9.53457189e-08, -0.422642976, 1.23979049e-07, 0.999996781, 4.02618312e-08, 0.422642767, 8.88878091e-08, 1))
 	end
 })
 
-MiscTeleports:AddButton({
+MainTeleports:AddButton({
 	Name = "greeners base",
 	Flag = "greenersbase",
 	Callback = function()
@@ -182,11 +182,27 @@ MiscTeleports:AddButton({
 	end
 })
 
-MiscTeleports:AddButton({
+MainTeleports:AddButton({
 	Name = "sandoids base",
 	Flag = "sandoidsbase",
 	Callback = function()
 		Teleport(CFrame.new(-252.102463, 5.44453182, -1701.30249, 0.999999881, 4.79958514e-15, 1.0658141e-14, 4.79958514e-15, 1, 1.27886653e-29, 1.0658141e-14, 1.27886653e-29, 1))
+	end
+})
+
+MiscTeleports:AddButton({
+	Name = "Tower",
+	Flag = "Tower",
+	Callback = function()
+		Teleport(CFrame.new(927.54303, 110.004189, -1364.21716, 1, 0, 0, 0, 1, 0, 0, 0, 1))
+	end
+})
+
+MiscTeleports:AddButton({
+	Name = "Church",
+	Flag = "Church",
+	Callback = function()
+		Teleport(CFrame.new(961.899963, 5.02499914, -741.100037, 0, 0, -1, 0, 1, 0, 1, 0, 0))
 	end
 })
 
