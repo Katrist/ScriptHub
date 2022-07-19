@@ -10,7 +10,6 @@ local ReplicatedStorage = Game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ScriptContext = game:GetService("ScriptContext")
-local HttpService = game:GetService("HttpService")
 local Workspace = workspace
 
 --//Libraries
