@@ -133,7 +133,14 @@ end
 local function Sit(seat)
 	local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
 	
-	if not Humanoid then
+	if not Humanoid or Humanoid:GetState() == Enum.HumanoidStateType.Dead then
+		Orion:MakeNotification({
+			Name = "Unable to sit Humanoid",
+			Content = "Please try again later.",
+			Image = "rbxassetid://4483345998",
+			Time = 5
+		})
+		
 		return
 	end
 	
@@ -322,7 +329,7 @@ MainTeams:AddButton({
 })
 
 MainKeybinds:AddBind({
-	Name = "Teleport to destinatioin",
+	Name = "Teleport to destination",
 	Default = Enum.KeyCode.T,
 	Save = true,
 	Flag = "TeleportToDestination",
