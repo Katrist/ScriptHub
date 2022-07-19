@@ -73,14 +73,18 @@ local MainTeams = Teams:AddSection({
 	Name = "Main"
 })
 
-local Keybinds = Window:MakeTab({
-	Name = "Keybinds",
+local Controls = Window:MakeTab({
+	Name = "Controls",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
 })
 
-local MainKeybinds = Keybinds:AddSection({
+local MainControls = Controls:AddSection({
 	Name = "Main"
+})
+
+local MiscControls = Controls:AddSection({
+	Name = "Miscellaneous"
 })
 
 local Credits = Window:MakeTab({
@@ -94,9 +98,23 @@ local MainCredits = Credits:AddSection({
 })
 
 --//Controls
+local showNotifications = false
 local destination = nil
 
 --//Functions
+local function Notify(title, text)
+	if not showNotifications then
+		return
+	end
+	
+	Orion:MakeNotification({
+		Name = title,
+		Content = text,
+		Image = "rbxassetid://4483345998",
+		Time = 5
+	})
+end
+
 local function GetClass(className)
 	local Map = Workspace.Map
 	local Folder = LocalPlayer.Team == Game.Teams.greeners and Map:WaitForChild("greeners spawn") or LocalPlayer.Team == Game.Teams.sandoids and Map:WaitForChild("sandoids spawn")
@@ -136,12 +154,7 @@ local function Sit(seat)
 	local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
 
 	if not Humanoid or Humanoid:GetState() == Enum.HumanoidStateType.Dead then
-		Orion:MakeNotification({
-			Name = "Unable to sit Humanoid",
-			Content = "Please try again later.",
-			Image = "rbxassetid://4483345998",
-			Time = 5
-		})
+		Notify("Unable to sit Humanoid", "Please try again later.")
 
 		return
 	end
@@ -165,12 +178,7 @@ local function TeleportToHelicopter(isTeam)
 	local functionality = foundHelicopter and foundHelicopter:FindFirstChild("Functionality")
 
 	if not functionality then
-		Orion:MakeNotification({
-			Name = "Helicopter could not be found",
-			Content = "Please try again later.",
-			Image = "rbxassetid://4483345998",
-			Time = 5
-		})
+		Notify("Helicopter could not be found", "Please try again later.")
 
 		return
 	end
@@ -337,29 +345,56 @@ MainTeams:AddButton({
 	end
 })
 
-MainKeybinds:AddBind({
+MainControls:AddBind({
 	Name = "Hide UI",
 	Default = Enum.KeyCode.F2,
 	Save = true,
 	Flag = "HideUI",
 	Hold = false,
 	Callback = function()
-		OrionUI.Enabled = not OrionUI.Enabled
+		local MainFrame = nil
+		
+		for i, child in ipairs(OrionUI:GetChildren()) do
+			if child:FindFirstChildWhichIsA("UIListLayout") then
+				continue
+			end
+			
+			MainFrame = child
+		end
+		
+		MainFrame.Visible = not MainFrame.Visible
 
-		if OrionUI.Enabled then
+		if MainFrame.Visible then
 			return
 		end
-
-		Orion:MakeNotification({
-			Name = "UI hidden",
-			Content = "Press F2 to enable the UI",
-			Image = "rbxassetid://4483345998",
-			Time = 5
-		})
+		
+		Notify("UI hidden", "Press F1 to re-enable the UI.")
 	end  
 })
 
-MainKeybinds:AddBind({
+MainControls:AddToggle({
+	Name = "Show notifications",
+	Default = false,
+	Save = true,
+	Flag = "ShowNotifications",
+	Callback = function(bool)
+		showNotifications = bool
+		
+		local MainFrame = nil
+
+		for i, child in ipairs(OrionUI:GetChildren()) do
+			if not child:FindFirstChildWhichIsA("UIListLayout") then
+				continue
+			end
+
+			MainFrame = child
+		end
+	
+		MainFrame.Visible = showNotifications
+	end
+})
+
+MiscControls:AddBind({
 	Name = "Teleport to destination",
 	Default = Enum.KeyCode.T,
 	Save = true,
@@ -374,7 +409,7 @@ MainKeybinds:AddBind({
 	end  
 })
 
-MainKeybinds:AddDropdown({
+MiscControls:AddDropdown({
 	Name = "Teleports",
 	Default = "A",
 	Save = true,
