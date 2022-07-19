@@ -374,7 +374,7 @@ MainControls:AddBind({
 
 MainControls:AddToggle({
 	Name = "Show notifications",
-	Default = false,
+	Default = true,
 	Save = true,
 	Flag = "ShowNotifications",
 	Callback = function(bool)
