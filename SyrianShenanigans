@@ -23,7 +23,7 @@ local Error = ScriptContext.Error
 
 Orion:MakeNotification({
 	Name = "Welcome, ".. LocalPlayer.DisplayName,
-	Content = "Press F2 to hide the UI, you can change the controls in Keybinds.",
+	Content = "Created by Katrist#3130, feel free to DM me for any suggestions",
 	Image = "rbxassetid://4483345998",
 	Time = 5
 })
@@ -389,7 +389,7 @@ MainControls:AddBind({
 			return
 		end
 		
-		Notify("UI hidden", "Press ".. tostring(Orion.Flags.HideUI.Default) .." to re-enable the UI.")
+		Notify("UI hidden", "Press your keybind again to re-enable the UI.")
 	end  
 })
 
