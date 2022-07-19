@@ -10,6 +10,7 @@ local ReplicatedStorage = Game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local ScriptContext = game:GetService("ScriptContext")
+local HttpService = game:GetService("HttpService")
 local Workspace = workspace
 
 --//Libraries
@@ -99,7 +100,11 @@ local MainCredits = Credits:AddSection({
 
 --//Controls
 local showNotifications = false
+local noFallDamage = false
 local destination = nil
+
+--//Tables
+local Connections = {}
 
 --//Functions
 local function Notify(title, text)
@@ -209,6 +214,22 @@ local function TeleportToHelicopter(isTeam)
 	end
 
 	Teleport(foundHelicopter.Parts.Body.Main:GetPivot() + Vector3.new(0, 2, 0))
+end
+
+local function NoFallDamage(HumanoidRootPart)
+	local mt = getrawmetatable(game)
+	local oldindex = mt.__index
+	setreadonly(mt, false)
+
+	mt.__index = newcclosure(function(indexed, property)
+		if noFallDamage and indexed == HumanoidRootPart and property == "Velocity" then
+			return Vector3.zero
+		end
+
+		return oldindex(indexed, property)
+	end)
+
+	setreadonly(mt, true)
 end
 
 RunService.Heartbeat:Connect(function()
@@ -368,7 +389,7 @@ MainControls:AddBind({
 			return
 		end
 		
-		Notify("UI hidden", "Press F1 to re-enable the UI.")
+		Notify("UI hidden", "Press ".. tostring(Orion.Flags.HideUI.Default) .." to re-enable the UI.")
 	end  
 })
 
@@ -429,6 +450,35 @@ MiscControls:AddDropdown({
 	Callback = function(selection)
 		destination = selection
 	end    
+})
+
+MiscControls:AddToggle({
+	Name = "No fall damage",
+	Default = false,
+	Save = true,
+	Flag = "FallDamage",
+	Callback = function(bool)
+		noFallDamage = bool
+
+		if noFallDamage then
+			local HumanoidRootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+			if HumanoidRootPart then
+				NoFallDamage(HumanoidRootPart)
+			end
+
+			Connections.FallDamage = LocalPlayer.CharacterAdded:Connect(function(character)
+				local HumanoidRootPart = character:WaitForChild("HumanoidRootPart")	
+				NoFallDamage(HumanoidRootPart)
+			end)
+		else
+			local connection = Connections.FallDamage
+
+			if connection then
+				connection:Disconnect()
+			end
+		end
+	end
 })
 
 MainCredits:AddParagraph(
