@@ -111,7 +111,7 @@ local function Notify(title, text)
 	if not showNotifications then
 		return
 	end
-	
+
 	Orion:MakeNotification({
 		Name = title,
 		Content = text,
@@ -232,6 +232,44 @@ local function NoFallDamage(HumanoidRootPart)
 	setreadonly(mt, true)
 end
 
+local TeleportFunctions = {
+	A = function()
+		Teleport(CFrame.new(953.263733, 48.8458405, -1388.88696, -0.999710679, 0.0239229836, 0.0025293231, 0.0238033403, 0.99892199, -0.0398465917, -0.00347984955, -0.0397748314, -1))
+	end,
+	
+	B = function()
+		Teleport(CFrame.new(618.627197, 27.1264309, -715.308167, 0.0871893987, 7.4505806e-09, -0.996192098, 2.89292075e-08, 0.999999464, -3.7252903e-09, 0.996191919, 2.81725079e-08, 0))
+	end,
+	
+	C = function()
+		Teleport(CFrame.new(437.001617, 5.46249237, -54.3074951, 0.906297863, 9.53457189e-08, -0.422642976, 1.23979049e-07, 0.999996781, 4.02618312e-08, 0.422642767, 8.88878091e-08, 1))
+	end,
+	
+	["greeners base"] = function()
+		Teleport(CFrame.new(1900.40857, 5.43672743, -234.046738, -1, -2.47957388e-07, -2.98022638e-08, -2.47957388e-07, 1, 8.0523904e-08, 2.98022389e-08, 8.05239111e-08, -1))
+	end,
+	
+	["sandoids base"] = function()
+		Teleport(CFrame.new(-252.102463, 5.44453182, -1701.30249, 0.999999881, 4.79958514e-15, 1.0658141e-14, 4.79958514e-15, 1, 1.27886653e-29, 1.0658141e-14, 1.27886653e-29, 1))
+	end,
+	
+	["Team Helicopter"] = function()
+		TeleportToHelicopter(true)
+	end,
+	
+	["Enemy Helicopter"] = function()
+		TeleportToHelicopter(false)
+	end,
+	
+	Tower = function()
+		Teleport(CFrame.new(927.54303, 110.004189, -1364.21716, 1, 0, 0, 0, 1, 0, 0, 0, 1))
+	end,
+	
+	Church = function()
+		Teleport(CFrame.new(961.899963, 5.02499914, -741.100037, 0, 0, -1, 0, 1, 0, 1, 0, 0))
+	end,
+}
+
 RunService.Heartbeat:Connect(function()
 	for i, connection in pairs(getconnections(Error)) do
 		connection:Disable()
@@ -282,7 +320,7 @@ MainTeleports:AddButton({
 	Name = "A",
 	Flag = "A",
 	Callback = function()
-		Teleport(CFrame.new(953.263733, 48.8458405, -1388.88696, -0.999710679, 0.0239229836, 0.0025293231, 0.0238033403, 0.99892199, -0.0398465917, -0.00347984955, -0.0397748314, -1))
+		TeleportFunctions.A()
 	end
 })
 
@@ -290,7 +328,7 @@ MainTeleports:AddButton({
 	Name = "B",
 	Flag = "B",
 	Callback = function()
-		Teleport(CFrame.new(618.627197, 27.1264309, -715.308167, 0.0871893987, 7.4505806e-09, -0.996192098, 2.89292075e-08, 0.999999464, -3.7252903e-09, 0.996191919, 2.81725079e-08, 0))
+		TeleportFunctions.B()
 	end
 })
 
@@ -298,7 +336,7 @@ MainTeleports:AddButton({
 	Name = "C",
 	Flag = "C",
 	Callback = function()
-		Teleport(CFrame.new(437.001617, 5.46249237, -54.3074951, 0.906297863, 9.53457189e-08, -0.422642976, 1.23979049e-07, 0.999996781, 4.02618312e-08, 0.422642767, 8.88878091e-08, 1))
+		TeleportFunctions.C()
 	end
 })
 
@@ -306,7 +344,7 @@ MainTeleports:AddButton({
 	Name = "greeners base",
 	Flag = "greeners base",
 	Callback = function()
-		Teleport(CFrame.new(1900.40857, 5.43672743, -234.046738, -1, -2.47957388e-07, -2.98022638e-08, -2.47957388e-07, 1, 8.0523904e-08, 2.98022389e-08, 8.05239111e-08, -1))
+		TeleportFunctions["greeners base"]()
 	end
 })
 
@@ -314,7 +352,7 @@ MainTeleports:AddButton({
 	Name = "sandoids base",
 	Flag = "sandoids base",
 	Callback = function()
-		Teleport(CFrame.new(-252.102463, 5.44453182, -1701.30249, 0.999999881, 4.79958514e-15, 1.0658141e-14, 4.79958514e-15, 1, 1.27886653e-29, 1.0658141e-14, 1.27886653e-29, 1))
+		TeleportFunctions["sandoids base"]()
 	end
 })
 
@@ -322,7 +360,7 @@ FunTeleports:AddButton({
 	Name = "Team Helicopter",
 	Flag = "Team Helicopter",
 	Callback = function()
-		TeleportToHelicopter(true)
+		TeleportFunctions["Team Helicopter"]()
 	end
 })
 
@@ -330,7 +368,7 @@ FunTeleports:AddButton({
 	Name = "Enemy Helicopter",
 	Flag = "Enemy Helicopter",
 	Callback = function()
-		TeleportToHelicopter(false)
+		TeleportFunctions["Enemy Helicopter"]()
 	end
 })
 
@@ -338,7 +376,7 @@ MiscTeleports:AddButton({
 	Name = "Tower",
 	Flag = "Tower",
 	Callback = function()
-		Teleport(CFrame.new(927.54303, 110.004189, -1364.21716, 1, 0, 0, 0, 1, 0, 0, 0, 1))
+		TeleportFunctions.Tower()
 	end
 })
 
@@ -346,7 +384,7 @@ MiscTeleports:AddButton({
 	Name = "Church",
 	Flag = "Church",
 	Callback = function()
-		Teleport(CFrame.new(961.899963, 5.02499914, -741.100037, 0, 0, -1, 0, 1, 0, 1, 0, 0))
+		TeleportFunctions.Church()
 	end
 })
 
@@ -374,21 +412,21 @@ MainControls:AddBind({
 	Hold = false,
 	Callback = function()
 		local MainFrame = nil
-		
+
 		for i, child in ipairs(OrionUI:GetChildren()) do
 			if child:FindFirstChildWhichIsA("UIListLayout") then
 				continue
 			end
-			
+
 			MainFrame = child
 		end
-		
+
 		MainFrame.Visible = not MainFrame.Visible
 
 		if MainFrame.Visible then
 			return
 		end
-		
+
 		Notify("UI hidden", "Press your keybind again to re-enable the UI.")
 	end  
 })
@@ -400,7 +438,7 @@ MainControls:AddToggle({
 	Flag = "ShowNotifications",
 	Callback = function(bool)
 		showNotifications = bool
-		
+
 		local MainFrame = nil
 
 		for i, child in ipairs(OrionUI:GetChildren()) do
@@ -410,50 +448,13 @@ MainControls:AddToggle({
 
 			MainFrame = child
 		end
-	
+
 		MainFrame.Visible = showNotifications
 	end
 })
 
-MiscControls:AddBind({
-	Name = "Teleport to destination",
-	Default = Enum.KeyCode.T,
-	Save = true,
-	Flag = "TeleportToDestination",
-	Hold = false,
-	Callback = function()
-		if not destination then
-			return
-		end
-
-		Orion.Flags[destination]:Press()
-	end  
-})
-
-MiscControls:AddDropdown({
-	Name = "Teleports",
-	Default = "A",
-	Save = true,
-	Flag = "Teleports",
-	Options = {
-		"A", 
-		"B", 
-		"C",
-		"greeners base",
-		"sandoids base",
-		"Team Helicopter",
-		"Enemy Helicopter",
-		"Tower",
-		"Church"
-	},
-
-	Callback = function(selection)
-		destination = selection
-	end    
-})
-
 MiscControls:AddToggle({
-	Name = "No fall damage",
+	Name = "No Fall Damage",
 	Default = false,
 	Save = true,
 	Flag = "FallDamage",
@@ -479,6 +480,43 @@ MiscControls:AddToggle({
 			end
 		end
 	end
+})
+
+MiscControls:AddBind({
+	Name = "Teleport to destination",
+	Default = Enum.KeyCode.T,
+	Save = true,
+	Flag = "TeleportToDestination",
+	Hold = false,
+	Callback = function()
+		if not destination then
+			return
+		end
+
+		TeleportFunctions[destination]()
+	end  
+})
+
+MiscControls:AddDropdown({
+	Name = "Teleports",
+	Default = "A",
+	Save = true,
+	Flag = "Teleports",
+	Options = {
+		"A", 
+		"B", 
+		"C",
+		"greeners base",
+		"sandoids base",
+		"Team Helicopter",
+		"Enemy Helicopter",
+		"Tower",
+		"Church"
+	},
+
+	Callback = function(selection)
+		destination = selection
+	end    
 })
 
 MainCredits:AddParagraph(
