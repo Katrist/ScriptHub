@@ -34,6 +34,16 @@ local Window = Orion:MakeWindow({
 	IntroText = "Syrian Shenanigans"
 })
 
+local Player = Window:MakeTab({
+	Name = "Player",
+	Icon = "rbxassetid://10287390300",
+	PremiumOnly = false
+})
+
+local MainPlayer = Player:AddSection({
+	Name = "Main"
+})
+
 local Classes = Window:MakeTab({
 	Name = "Classes",
 	Icon = "rbxassetid://10287390300",
@@ -97,6 +107,9 @@ local MainCredits = Credits:AddSection({
 })
 
 --//Controls
+local speedBypass = false
+local speed = 16
+local sliderDebounce = false
 local noFallDamage = false
 local class = nil
 local destination = nil
@@ -226,6 +239,16 @@ local function NoFallDamage(HumanoidRootPart)
 	setreadonly(mt, true)
 end
 
+local function SpeedBypass()
+	Connections.SpeedBypass = RunService.Stepped:Connect(function()
+		local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+		
+		if Humanoid and Humanoid.MoveDirection.Magnitude > 0 then
+			LocalPlayer.Character:TranslateBy(Humanoid.MoveDirection * (speed/60))
+		end
+	end)
+end
+
 local ClassFunctions = {
 	["Machine Gunner"] = function()
 		GetClass("Machine Gunner")
@@ -286,11 +309,107 @@ local TeleportFunctions = {
 	end,
 }
 
-RunService.Heartbeat:Connect(function()
+RunService.Stepped:Connect(function()
 	for i, connection in pairs(getconnections(Error)) do
 		connection:Disable()
 	end
 end)
+
+MainPlayer:AddToggle({
+	Name = "Speed Bypass",
+	Default = false,
+	Save = true,
+	Flag = "SpeedBypass",
+	Callback = function(bool)
+		speedBypass = bool
+
+		if speedBypass then
+			local Speed = Orion.Flags.Speed
+
+			if Speed then
+				Speed:Set(speed)
+			end
+			
+			SpeedBypass()
+		else	
+			local connection = Connections.SpeedBypass
+
+			if connection then
+				connection:Disconnect()
+			end
+			
+			local Speed = Orion.Flags.Speed
+			
+			if Speed then
+				local oldSpeed = speed
+				
+				Speed:Set(16)
+				speed = oldSpeed
+			end
+		end
+	end
+})
+
+MainPlayer:AddSlider({
+	Name = "Speed",
+	Save = true,
+	Flag = "Speed",
+	Min = 16,
+	Max = 100,
+	Default = 16,
+	Color = Color3.fromRGB(141, 141, 141),
+	Increment = 2,
+	ValueName = "",
+	Callback = function(value)
+		if value ~= 16 and not speedBypass then		
+			Orion.Flags.Speed:Set(16)
+			
+			if sliderDebounce then
+				return
+			end
+			
+			sliderDebounce = true
+			
+			Notify("Could not change speed", "Speed bypass must be enabled for speed changes.")
+			
+			task.wait(3)
+			sliderDebounce = false
+
+			return
+		end
+
+		speed = value
+	end
+})
+
+MainPlayer:AddToggle({
+	Name = "No Fall Damage",
+	Default = false,
+	Save = true,
+	Flag = "FallDamage",
+	Callback = function(bool)
+		noFallDamage = bool
+
+		if noFallDamage then
+			local HumanoidRootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+			if HumanoidRootPart then
+				NoFallDamage(HumanoidRootPart)
+			end
+
+			Connections.FallDamage = LocalPlayer.CharacterAdded:Connect(function(character)
+				local HumanoidRootPart = character:WaitForChild("HumanoidRootPart")	
+				NoFallDamage(HumanoidRootPart)
+			end)
+		else
+			local connection = Connections.FallDamage
+
+			if connection then
+				connection:Disconnect()
+			end
+		end
+	end
+})
 
 MainClasses:AddButton({
 	Name = "Machine Gunner",
@@ -464,35 +583,6 @@ MainControls:AddToggle({
 		end
 
 		MainFrame.Visible = bool
-	end
-})
-
-MiscControls:AddToggle({
-	Name = "No Fall Damage",
-	Default = false,
-	Save = true,
-	Flag = "FallDamage",
-	Callback = function(bool)
-		noFallDamage = bool
-
-		if noFallDamage then
-			local HumanoidRootPart = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-			if HumanoidRootPart then
-				NoFallDamage(HumanoidRootPart)
-			end
-
-			Connections.FallDamage = LocalPlayer.CharacterAdded:Connect(function(character)
-				local HumanoidRootPart = character:WaitForChild("HumanoidRootPart")	
-				NoFallDamage(HumanoidRootPart)
-			end)
-		else
-			local connection = Connections.FallDamage
-
-			if connection then
-				connection:Disconnect()
-			end
-		end
 	end
 })
 
