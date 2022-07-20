@@ -97,8 +97,8 @@ local MainCredits = Credits:AddSection({
 })
 
 --//Controls
-local showNotifications = false
 local noFallDamage = false
+local class = nil
 local destination = nil
 
 --//Tables
@@ -106,10 +106,6 @@ local Connections = {}
 
 --//Functions
 local function Notify(title, text)
-	if not showNotifications then
-		return
-	end
-
 	Orion:MakeNotification({
 		Name = title,
 		Content = text,
@@ -229,6 +225,28 @@ local function NoFallDamage(HumanoidRootPart)
 
 	setreadonly(mt, true)
 end
+
+local ClassFunctions = {
+	["Machine Gunner"] = function()
+		GetClass("Machine Gunner")
+	end,
+	
+	Tanker = function()
+		GetClass("Tanker")
+	end,
+	
+	Marksman = function()
+		GetClass("Sniper")
+	end,
+	
+	Rifleman = function()
+		GetClass("Infantry")
+	end,
+	
+	["Anti Tank"] = function()
+		GetClass("Anti Tank")
+	end,
+}
 
 local TeleportFunctions = {
 	A = function()
@@ -430,13 +448,11 @@ MainControls:AddBind({
 })
 
 MainControls:AddToggle({
-	Name = "Show notifications",
+	Name = "Show Notifications",
 	Default = true,
 	Save = true,
 	Flag = "ShowNotifications",
 	Callback = function(bool)
-		showNotifications = bool
-
 		local MainFrame = nil
 
 		for i, child in ipairs(OrionUI:GetChildren()) do
@@ -447,7 +463,7 @@ MainControls:AddToggle({
 			MainFrame = child
 		end
 
-		MainFrame.Visible = showNotifications
+		MainFrame.Visible = bool
 	end
 })
 
@@ -481,8 +497,41 @@ MiscControls:AddToggle({
 })
 
 MiscControls:AddBind({
-	Name = "Teleport to destination",
-	Default = Enum.KeyCode.T,
+	Name = "Become Selected Class",
+	Default = Enum.KeyCode.F3,
+	Save = true,
+	Flag = "BecomeSelectedClass",
+	Hold = false,
+	Callback = function()
+		if not class then
+			return
+		end
+
+		ClassFunctions[class]()
+	end  
+})
+
+MiscControls:AddDropdown({
+	Name = "Classes",
+	Default = "Rifleman",
+	Save = true,
+	Flag = "Classes",
+	Options = {
+		"Machine Gunner", 
+		"Tanker", 
+		"Marksman",
+		"Rifleman",
+		"Anti Tank",
+	},
+
+	Callback = function(selection)
+		class = selection
+	end
+})
+
+MiscControls:AddBind({
+	Name = "Teleport To Destination",
+	Default = Enum.KeyCode.F4,
 	Save = true,
 	Flag = "TeleportToDestination",
 	Hold = false,
@@ -514,7 +563,7 @@ MiscControls:AddDropdown({
 
 	Callback = function(selection)
 		destination = selection
-	end    
+	end
 })
 
 MainCredits:AddParagraph(
