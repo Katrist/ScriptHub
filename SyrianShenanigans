@@ -18,6 +18,7 @@ local Orion = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexwa
 local OrionUI = ProtectedUI.Orion
 local LocalPlayer = Players.LocalPlayer
 local Error = ScriptContext.Error
+local CurrentCamera = Workspace.CurrentCamera
 
 Orion:MakeNotification({
 	Name = "Welcome, ".. LocalPlayer.DisplayName,
@@ -107,9 +108,12 @@ local MainCredits = Credits:AddSection({
 })
 
 --//Controls
+local fly = false
+local flySpeed = 16
+local flySpeedDebounce = false
 local speedBypass = false
 local speed = 16
-local sliderDebounce = false
+local speedDebounce = false
 local noFallDamage = false
 local class = nil
 local destination = nil
@@ -244,8 +248,48 @@ local function SpeedBypass()
 		local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
 
 		if Humanoid and Humanoid.MoveDirection.Magnitude > 0 then
-			LocalPlayer.Character:TranslateBy(Humanoid.MoveDirection * (speed/60))
+			LocalPlayer.Character:TranslateBy(speed/60 * Humanoid.MoveDirection)
 		end
+	end)
+end
+
+local function Fly()
+	if LocalPlayer.Character then
+		local Humanoid = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+		
+		if Humanoid then
+			Humanoid.PlatformStand = true
+		end
+		
+		local Head = LocalPlayer.Character:FindFirstChild("Head")
+		
+		if Head then
+			Head.Anchored = true
+		end
+	end
+	
+	Connections.Fly = RunService.Stepped:Connect(function(deltaTime)
+		if not LocalPlayer.Character then
+			return
+		end
+		
+		local Humanoid = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+		local Head = LocalPlayer.Character:FindFirstChild("Head")
+		
+		if not Humanoid or not Head then
+			return
+		end
+		
+		local moveDirection = Humanoid.MoveDirection * (flySpeed/1200 * deltaTime)
+		local cameraCFrame = CurrentCamera.CFrame
+		local cameraOffset = Head.CFrame:ToObjectSpace(cameraCFrame).Position
+		cameraCFrame *= CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
+		
+		local headPosition = Head.CFrame.Position
+		local cameraPosition = cameraCFrame.Position
+		
+		local objectSpaceVelocity = CFrame.new(cameraPosition, Vector3.new(headPosition.X, cameraPosition.Y, headPosition.Z)):VectorToObjectSpace(moveDirection)
+		Head.CFrame = CFrame.new(headPosition) * (cameraCFrame - cameraPosition) * CFrame.new(objectSpaceVelocity)
 	end)
 end
 
@@ -316,6 +360,88 @@ RunService.Stepped:Connect(function()
 end)
 
 MainPlayer:AddToggle({
+	Name = "Fly",
+	Default = false,
+	Save = true,
+	Flag = "Fly",
+	Callback = function(bool)
+		fly = bool
+
+		if fly then
+			local FlySpeed = Orion.Flags.FlySpeed
+
+			if FlySpeed then
+				FlySpeed:Set(flySpeed)
+			end
+
+			Fly()
+		else
+			local connection = Connections.Fly
+
+			if connection then
+				connection:Disconnect()
+			end
+
+			local FlySpeed = Orion.Flags.FlySpeed
+
+			if FlySpeed then
+				local oldSpeed = flySpeed
+
+				FlySpeed:Set(16)
+				flySpeed = oldSpeed
+			end
+			
+			if LocalPlayer.Character then
+				local Humanoid = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+				
+				if Humanoid then
+					Humanoid.PlatformStand = false
+				end
+				
+				local Head = LocalPlayer.Character:FindFirstChild("Head")
+				
+				if Head then
+					Head.Anchored = false
+				end
+			end
+		end
+	end
+})
+
+MainPlayer:AddSlider({
+	Name = "Fly Speed",
+	Save = true,
+	Flag = "FlySpeed",
+	Min = 16,
+	Max = 100,
+	Default = 16,
+	Color = Color3.fromRGB(141, 141, 141),
+	Increment = 2,
+	ValueName = "",
+	Callback = function(value)
+		if value ~= 16 and not fly then
+			Orion.Flags.FlySpeed:Set(16)
+			flySpeed = value
+
+			if flySpeedDebounce then
+				return
+			end
+
+			flySpeedDebounce = true
+
+			Notify("Could not change fly speed", "Fly must be enabled for fly speed changes.")
+
+			task.wait(3)
+			flySpeedDebounce = false
+
+			return
+		end
+
+		flySpeed = value
+	end
+})
+
+MainPlayer:AddToggle({
 	Name = "Speed Bypass",
 	Default = false,
 	Save = true,
@@ -365,16 +491,16 @@ MainPlayer:AddSlider({
 			Orion.Flags.Speed:Set(16)
 			speed = value
 
-			if sliderDebounce then
+			if speedDebounce then
 				return
 			end
 
-			sliderDebounce = true
+			speedDebounce = true
 
 			Notify("Could not change speed", "Speed bypass must be enabled for speed changes.")
 
 			task.wait(3)
-			sliderDebounce = false
+			speedDebounce = false
 
 			return
 		end
