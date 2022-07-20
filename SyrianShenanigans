@@ -296,7 +296,7 @@ MainClasses:AddButton({
 	Name = "Machine Gunner",
 	Flag = "MachineGunner",
 	Callback = function()
-		GetClass("Machine Gunner")
+		ClassFunctions["Machine Gunner"]()
 	end
 })
 
@@ -304,7 +304,7 @@ MainClasses:AddButton({
 	Name = "Tanker",
 	Flag = "Tanker",
 	Callback = function()
-		GetClass("Tanker")
+		ClassFunctions.Tanker()
 	end
 })
 
@@ -312,7 +312,7 @@ MainClasses:AddButton({
 	Name = "Marksman",
 	Flag = "Marksman",
 	Callback = function()
-		GetClass("Sniper")
+		ClassFunctions.Marksman()
 	end
 })
 
@@ -320,7 +320,7 @@ MainClasses:AddButton({
 	Name = "Rifleman",
 	Flag = "Rifleman",
 	Callback = function()
-		GetClass("Infantry")
+		ClassFunctions.Rifleman()
 	end
 })
 
@@ -328,7 +328,7 @@ MainClasses:AddButton({
 	Name = "Anti Tank",
 	Flag = "AntiTank",
 	Callback = function()
-		GetClass("Anti Tank")
+		ClassFunctions["Anti Tank"]()
 	end
 })
 
