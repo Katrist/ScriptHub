@@ -269,7 +269,7 @@ local function Fly()
 		Humanoid.PlatformStand = true
 		Head.Anchored = true
 		
-		local moveDirection = Humanoid.MoveDirection * flySpeed/20
+		local moveDirection = flySpeed/20 * Humanoid.MoveDirection
 		local cameraCFrame = CurrentCamera.CFrame
 		local cameraOffset = Head.CFrame:ToObjectSpace(cameraCFrame).Position
 		cameraCFrame *= CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
