@@ -361,8 +361,9 @@ MainPlayer:AddSlider({
 	Increment = 2,
 	ValueName = "",
 	Callback = function(value)
-		if value ~= 16 and not speedBypass then		
+		if value ~= 16 and not speedBypass then
 			Orion.Flags.Speed:Set(16)
+			speed = value
 			
 			if sliderDebounce then
 				return
