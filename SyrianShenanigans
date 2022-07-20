@@ -280,7 +280,7 @@ local function Fly()
 			return
 		end
 		
-		local moveDirection = Humanoid.MoveDirection * (flySpeed/1200 * deltaTime)
+		local moveDirection = Humanoid.MoveDirection * (flySpeed/20 * deltaTime)
 		local cameraCFrame = CurrentCamera.CFrame
 		local cameraOffset = Head.CFrame:ToObjectSpace(cameraCFrame).Position
 		cameraCFrame *= CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
