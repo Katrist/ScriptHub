@@ -21,9 +21,9 @@ local Error = ScriptContext.Error
 
 Orion:MakeNotification({
 	Name = "Welcome, ".. LocalPlayer.DisplayName,
-	Content = "Created by Katrist#3130, feel free to DM me for any suggestions",
+	Content = "Created by Katrist#3130, feel free to DM me for any suggestions.",
 	Image = "rbxassetid://4483345998",
-	Time = 5
+	Time = 10
 })
 
 local Window = Orion:MakeWindow({
@@ -36,7 +36,7 @@ local Window = Orion:MakeWindow({
 
 local Classes = Window:MakeTab({
 	Name = "Classes",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://10287390300",
 	PremiumOnly = false
 })
 
@@ -46,7 +46,7 @@ local MainClasses = Classes:AddSection({
 
 local Teleports = Window:MakeTab({
 	Name = "Teleports",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://10287452656",
 	PremiumOnly = false
 })
 
@@ -64,7 +64,7 @@ local MiscTeleports = Teleports:AddSection({
 
 local Teams = Window:MakeTab({
 	Name = "Teams",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://10287380479",
 	PremiumOnly = false
 })
 
@@ -73,8 +73,8 @@ local MainTeams = Teams:AddSection({
 })
 
 local Controls = Window:MakeTab({
-	Name = "Controls",
-	Icon = "rbxassetid://4483345998",
+	Name = "Settings",
+	Icon = "rbxassetid://10287139343",
 	PremiumOnly = false
 })
 
@@ -88,7 +88,7 @@ local MiscControls = Controls:AddSection({
 
 local Credits = Window:MakeTab({
 	Name = "Credits",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://10287114475",
 	PremiumOnly = false
 })
 
@@ -234,35 +234,35 @@ local TeleportFunctions = {
 	A = function()
 		Teleport(CFrame.new(953.263733, 48.8458405, -1388.88696, -0.999710679, 0.0239229836, 0.0025293231, 0.0238033403, 0.99892199, -0.0398465917, -0.00347984955, -0.0397748314, -1))
 	end,
-	
+
 	B = function()
 		Teleport(CFrame.new(618.627197, 27.1264309, -715.308167, 0.0871893987, 7.4505806e-09, -0.996192098, 2.89292075e-08, 0.999999464, -3.7252903e-09, 0.996191919, 2.81725079e-08, 0))
 	end,
-	
+
 	C = function()
 		Teleport(CFrame.new(437.001617, 5.46249237, -54.3074951, 0.906297863, 9.53457189e-08, -0.422642976, 1.23979049e-07, 0.999996781, 4.02618312e-08, 0.422642767, 8.88878091e-08, 1))
 	end,
-	
+
 	["greeners base"] = function()
 		Teleport(CFrame.new(1900.40857, 5.43672743, -234.046738, -1, -2.47957388e-07, -2.98022638e-08, -2.47957388e-07, 1, 8.0523904e-08, 2.98022389e-08, 8.05239111e-08, -1))
 	end,
-	
+
 	["sandoids base"] = function()
 		Teleport(CFrame.new(-252.102463, 5.44453182, -1701.30249, 0.999999881, 4.79958514e-15, 1.0658141e-14, 4.79958514e-15, 1, 1.27886653e-29, 1.0658141e-14, 1.27886653e-29, 1))
 	end,
-	
+
 	["Team Helicopter"] = function()
 		TeleportToHelicopter(true)
 	end,
-	
+
 	["Enemy Helicopter"] = function()
 		TeleportToHelicopter(false)
 	end,
-	
+
 	Tower = function()
 		Teleport(CFrame.new(927.54303, 110.004189, -1364.21716, 1, 0, 0, 0, 1, 0, 0, 0, 1))
 	end,
-	
+
 	Church = function()
 		Teleport(CFrame.new(961.899963, 5.02499914, -741.100037, 0, 0, -1, 0, 1, 0, 1, 0, 0))
 	end,
