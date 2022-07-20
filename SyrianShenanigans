@@ -254,21 +254,7 @@ local function SpeedBypass()
 end
 
 local function Fly()
-	if LocalPlayer.Character then
-		local Humanoid = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-		
-		if Humanoid then
-			Humanoid.PlatformStand = true
-		end
-		
-		local Head = LocalPlayer.Character:FindFirstChild("Head")
-		
-		if Head then
-			Head.Anchored = true
-		end
-	end
-	
-	Connections.Fly = RunService.Stepped:Connect(function(deltaTime)
+	Connections.Fly = RunService.Stepped:Connect(function()
 		if not LocalPlayer.Character then
 			return
 		end
@@ -280,7 +266,10 @@ local function Fly()
 			return
 		end
 		
-		local moveDirection = Humanoid.MoveDirection * (flySpeed/20 * deltaTime)
+		Humanoid.PlatformStand = true
+		Head.Anchored = true
+		
+		local moveDirection = Humanoid.MoveDirection * flySpeed/20
 		local cameraCFrame = CurrentCamera.CFrame
 		local cameraOffset = Head.CFrame:ToObjectSpace(cameraCFrame).Position
 		cameraCFrame *= CFrame.new(-cameraOffset.X, -cameraOffset.Y, -cameraOffset.Z + 1)
@@ -391,18 +380,20 @@ MainPlayer:AddToggle({
 				flySpeed = oldSpeed
 			end
 			
-			if LocalPlayer.Character then
-				local Humanoid = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-				
-				if Humanoid then
-					Humanoid.PlatformStand = false
-				end
-				
-				local Head = LocalPlayer.Character:FindFirstChild("Head")
-				
-				if Head then
-					Head.Anchored = false
-				end
+			if not LocalPlayer.Character then
+				return
+			end
+			
+			local Humanoid = LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+
+			if Humanoid then
+				Humanoid.PlatformStand = false
+			end
+
+			local Head = LocalPlayer.Character:FindFirstChild("Head")
+
+			if Head then
+				Head.Anchored = false
 			end
 		end
 	end
