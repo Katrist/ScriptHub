@@ -36,7 +36,7 @@ local Window = Orion:MakeWindow({
 
 local Player = Window:MakeTab({
 	Name = "Player",
-	Icon = "rbxassetid://10287390300",
+	Icon = "rbxassetid://10289431512",
 	PremiumOnly = false
 })
 
@@ -46,7 +46,7 @@ local MainPlayer = Player:AddSection({
 
 local Classes = Window:MakeTab({
 	Name = "Classes",
-	Icon = "rbxassetid://10287390300",
+	Icon = "rbxassetid://10289436627",
 	PremiumOnly = false
 })
 
@@ -74,7 +74,7 @@ local MiscTeleports = Teleports:AddSection({
 
 local Teams = Window:MakeTab({
 	Name = "Teams",
-	Icon = "rbxassetid://10287380479",
+	Icon = "rbxassetid://10289447310",
 	PremiumOnly = false
 })
 
@@ -84,7 +84,7 @@ local MainTeams = Teams:AddSection({
 
 local Controls = Window:MakeTab({
 	Name = "Settings",
-	Icon = "rbxassetid://10287139343",
+	Icon = "rbxassetid://10289452553",
 	PremiumOnly = false
 })
 
@@ -98,7 +98,7 @@ local MiscControls = Controls:AddSection({
 
 local Credits = Window:MakeTab({
 	Name = "Credits",
-	Icon = "rbxassetid://10287114475",
+	Icon = "rbxassetid://10289456215",
 	PremiumOnly = false
 })
 
@@ -242,7 +242,7 @@ end
 local function SpeedBypass()
 	Connections.SpeedBypass = RunService.Stepped:Connect(function()
 		local Humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
-		
+
 		if Humanoid and Humanoid.MoveDirection.Magnitude > 0 then
 			LocalPlayer.Character:TranslateBy(Humanoid.MoveDirection * (speed/60))
 		end
@@ -253,19 +253,19 @@ local ClassFunctions = {
 	["Machine Gunner"] = function()
 		GetClass("Machine Gunner")
 	end,
-	
+
 	Tanker = function()
 		GetClass("Tanker")
 	end,
-	
+
 	Marksman = function()
 		GetClass("Sniper")
 	end,
-	
+
 	Rifleman = function()
 		GetClass("Infantry")
 	end,
-	
+
 	["Anti Tank"] = function()
 		GetClass("Anti Tank")
 	end,
@@ -329,7 +329,7 @@ MainPlayer:AddToggle({
 			if Speed then
 				Speed:Set(speed)
 			end
-			
+
 			SpeedBypass()
 		else	
 			local connection = Connections.SpeedBypass
@@ -337,12 +337,12 @@ MainPlayer:AddToggle({
 			if connection then
 				connection:Disconnect()
 			end
-			
+
 			local Speed = Orion.Flags.Speed
-			
+
 			if Speed then
 				local oldSpeed = speed
-				
+
 				Speed:Set(16)
 				speed = oldSpeed
 			end
@@ -364,15 +364,15 @@ MainPlayer:AddSlider({
 		if value ~= 16 and not speedBypass then
 			Orion.Flags.Speed:Set(16)
 			speed = value
-			
+
 			if sliderDebounce then
 				return
 			end
-			
+
 			sliderDebounce = true
-			
+
 			Notify("Could not change speed", "Speed bypass must be enabled for speed changes.")
-			
+
 			task.wait(3)
 			sliderDebounce = false
 
